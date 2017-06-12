@@ -7,7 +7,7 @@ const routes: Routes = [
     { path: 'users',  component: UsersComponent }
 ];
 @NgModule({
-  imports: [ RouterModule.forRoot(routes) ],
-  exports: [ RouterModule ]
+    imports: [ RouterModule.forRoot(routes) ],
+    exports: [ RouterModule ]
 })
 export class AppRoutingModule {}

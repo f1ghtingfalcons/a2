@@ -1,0 +1,78 @@
+import { Injectable } from '@angular/core';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
+
+const LdapURL = 'http://localhost:3040/';
+
+@Injectable()
+export class UsersService {
+
+    constructor (private http: Http) {}
+
+    restrictedUserList : string[] = [
+        'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu',
+        'cn=Directory Manager',
+        'uid=pwmproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
+        'uid=pwmtest,ou=People,dc=lasp,dc=colorado,dc=edu',
+        'uid=shibproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
+        'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu'
+    ];
+
+    /**
+     * returns an array of group names. In LDAP if a user only belongs to one
+     * group, the memberOf property will only be a string so we convert it to
+     * a single object array instead.
+     */
+    private normalizeGroups( groups ) {
+        var normalizedGroups = [];
+        if ( Array.isArray( groups ) ) {
+            normalizedGroups = groups.map( function( group ) {
+                /**
+                 * Groups are represented by their dns in user objects.
+                 * To get a 'pretty' display name we take only the cn of the
+                 * group object and throw away any domain or object information
+                 *
+                 * before -> "cn=lovejoy-wiki-users,ou=groups,dc=lasp,dc=colorado,dc=edu"
+                 * after -> "lovejoy-wiki-users"
+                 */
+                return group.split( ',' )[0].substring( 3 );
+            });
+        } else if ( typeof groups === 'string' ) {
+            normalizedGroups = [ groups.split( ',' )[0].substring( 3 ) ];
+        }
+        return normalizedGroups;
+    }
+
+    /**
+     * Returns a list of all LDAP users minus restricted accounts
+     */
+    getAllUsers = function() {
+        return this.http.get( LdapURL + 'api/v1/users' )
+                        .map(res => res.json())
+                        .map( users => {
+                            users.forEach( user => {
+                                user.groups = this.normalizeGroups( user.memberOf );
+                            })
+                            return users.filter( user => {
+                                return this.restrictedUserList.indexOf( user.dn ) < 0;
+                            });
+                        })
+                        .catch(this.handleError)
+    }
+
+    private handleError (error: Response | any) {
+        // In a real world app, you might use a remote logging infrastructure
+        let errMsg: string;
+        if (error instanceof Response) {
+        const body = error.json() || '';
+        const err = body.error || JSON.stringify(body);
+        errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+        } else {
+        errMsg = error.message ? error.message : error.toString();
+        }
+        console.error(errMsg);
+        return Observable.throw(errMsg);
+    }
+}
