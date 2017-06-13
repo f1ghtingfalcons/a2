@@ -25,6 +25,9 @@ $app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
 
 body {
     margin: 0;
+    color: rgba(0,0,0,0.87);
+    background-color: rgb(250,250,250);
+    font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
 .page {
@@ -109,6 +112,10 @@ md-toast.md-error-toast-theme .md-toast-content {
 
 .no-margin {
     margin: 0;
+}
+
+.mat-list .mat-list-item .mat-list-item-content, .mat-nav-list .mat-list-item .mat-list-item-content {
+    height: 100% !important;
 }
 
 @-webkit-keyframes bounceInUp {

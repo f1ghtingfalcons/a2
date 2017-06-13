@@ -5,6 +5,7 @@ import { NgModule } from '@angular/core';
 import { MaterialModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,7 +27,8 @@ import { UsersService } from './shared/users.service';
         MaterialModule,
         FlexLayoutModule,
         HttpModule,
-        JsonpModule
+        JsonpModule,
+        NgxPaginationModule
     ],
     entryComponents: [
         LoginDialogComponent

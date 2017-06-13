@@ -62,6 +62,84 @@ export class UsersService {
                         .catch(this.handleError)
     }
 
+    /**
+     * Get a user profile by user id.
+     */
+    getById = function( username, timeout ) {
+        return this.http.get( LdapURL + 'api/v1/users/' + username )
+                        .map(res => res.json())
+                        .map( user => {
+                            user.groups = this.normalizedGroups( user.memberOf );
+                        })
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Get a user profile by email
+     */
+    getByEmail = function( email, timeout ) {
+        return this.http.get( LdapURL + 'api/v1/users/email/' + email )
+                        .map(res => res.json())
+                        .map( user => {
+                            user.groups = this.normalizedGroups( user.memberOf );
+                        })
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Add a new user to LDAP
+     */
+    createUser = function( user ) {
+        return this.http.post( LdapURL + 'api/v1/admin/users/', user )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Submit an LDAP update to an existing user
+     */
+    updateUser = function( user, update ) {
+        return this.http.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Remove a user from LDAP
+     */
+    deleteUser = function( username ) {
+        return this.http.delete( LdapURL + 'api/v1/admin/users/' + username )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Lock a user account
+     */
+    lockUser = function( username ) {
+        return this.http.put( LdapURL + 'api/v1/admin/users/lock' + username )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Unlock a user account
+     */
+    unlockUser = function( username ) {
+        return this.http.put( LdapURL + 'api/v1/admin/users/unlock' + username )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
+    /**
+     * Reset a user account
+     */
+    resetUser = function( username ) {
+        return this.http.put( LdapURL + 'api/v1/admin/users/reset' + username )
+                        .map(res => res.json())
+                        .catch(this.handleError);
+    };
+
     private handleError (error: Response | any) {
         // In a real world app, you might use a remote logging infrastructure
         let errMsg: string;

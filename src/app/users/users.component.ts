@@ -7,7 +7,8 @@ import { UsersService } from '../shared/users.service';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-    users: {}[];
+    p: number = 1;
+    users: {}[] = [];
     errorMessage: string;
 
     constructor( private usersService: UsersService ) {}
@@ -19,7 +20,6 @@ export class UsersComponent implements OnInit {
     getUsers() {
         this.usersService.getAllUsers().subscribe(
             users => {
-                console.log(users);
                 this.users = users },
             error => this.errorMessage = <any>error
         );
