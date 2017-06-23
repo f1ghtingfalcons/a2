@@ -1,0 +1,21 @@
+Hello {{firstName}},
+
+You are receiving this email as a new user of the LASP Galaxy Confluence system.
+
+You have been invited to activate your new LASP user account by visiting the following URL:
+https://lasp-login.colorado.edu/pwm
+
+At this site, click the 'Activate Account' button and use the following information to activate your account:
+
+First Name: {{firstName}}
+Last Name:  {{lastName}}
+Username:   {{username}}
+
+ACTIVATION GUIDE: For help with account activation, please refer to the online activation guide:
+https://lasp.colorado.edu/galaxy/display/lasp/How+to+Activate+Your+LASP+Web+Account
+
+If you have questions about this email message or the new account you are being invited to create, please contact your LASP project point-of-contact.
+
+Sincerely,
+
+The LASP Web Team
