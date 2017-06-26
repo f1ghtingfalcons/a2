@@ -13,11 +13,10 @@ let serverProc = null;
 // This task is only ever used by the /server/ watcher
 // and is not intended to be run manually.
 gulp.task('server:kill', function(cb) {
-    if( serverProc ) {
+    if (serverProc) {
         serverProc.on('close', cb);
         serverProc.kill();
-    }
-    else {
+    } else {
         cb();
     }
 });
@@ -32,8 +31,7 @@ gulp.task('server:start', ['server:cleanBuild'], function(cb) {
     childProcess = childProcess || require('child_process');
 
     serverProc = childProcess.spawn(
-        'node',
-        ['./server/dist/server.js']
+        'node', ['./src/server/dist/server.js']
     );
     serverProc.stdout.on('data', (data) => {
         console.log(data.toString('utf-8'));

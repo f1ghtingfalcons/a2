@@ -1,5 +1,0 @@
-{"name":"roleman-logger","hostname":"WIND2608","pid":13300,"level":30,"action":"User Added to Group","target":"ttest","groupAdded":"PwmAdmins","operator":"ttraver","msg":"","time":"2017-06-01T17:07:04.974Z","v":0}
-{"name":"roleman-logger","hostname":"WIND2608","pid":13300,"level":30,"action":"User Added to Group","target":"ttest2","groupAdded":"PwmAdmins","operator":"ttraver","msg":"","time":"2017-06-01T17:07:04.981Z","v":0}
-{"name":"roleman-logger","hostname":"WIND2608","pid":5472,"level":30,"action":"User Removed From Group","target":"ttest2","groupAdded":"PwmAdmins","operator":"ttraver","msg":"","time":"2017-06-01T17:26:51.127Z","v":0}
-{"name":"roleman-logger","hostname":"WIND2608","pid":5472,"level":30,"action":"User Removed From Group","target":"ttest","groupAdded":"PwmAdmins","operator":"ttraver","msg":"","time":"2017-06-01T17:26:51.134Z","v":0}
-{"name":"roleman-logger","hostname":"WIND2608","pid":5472,"level":30,"action":"User Added to Group","target":"ttest","groupAdded":"PwmAdmins","operator":"ttraver","msg":"","time":"2017-06-01T17:27:00.257Z","v":0}
