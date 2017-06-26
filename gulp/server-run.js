@@ -31,7 +31,7 @@ gulp.task('server:start', ['server:cleanBuild'], function(cb) {
     childProcess = childProcess || require('child_process');
 
     serverProc = childProcess.spawn(
-        'node', ['./src/server/dist/server.js']
+        'node', ['./server/dist/server.js']
     );
     serverProc.stdout.on('data', (data) => {
         console.log(data.toString('utf-8'));
@@ -59,34 +59,3 @@ gulp.task('server:start', ['server:cleanBuild'], function(cb) {
 gulp.task('server:restart', function(cb) {
     runSequence('server:kill', 'server:start', 'reloadBrowser', cb);
 });
-
-// // Start the server with the equivalent of a fresh
-// // server:cleanBuild and watch for changes to the
-// // /server/ directory. Rebuild and restart the server
-// // whenever changes are detected.
-// //
-// // Note: when the server is rebuilt due to a source file
-// // change we only run server:build and not server:cleanBuild.
-// // That particular behavior was a requirement for the project
-// // this code was copied from, so we can (probably) change that
-// // if we ever need to. However I'm leaving it as-is because:
-// //
-// // 1. I'm lazy
-// // 2. It's a tiny bit faster
-// // 3. It didn't seem to cause any problems in the other
-// //      project (lemr-editor-server)
-// gulp.task('server:run', function(cb) {
-// 	// Manually run server:clean to simulate running server:cleanBuild.
-// 	// The server:start task depends on server:build, so that part
-// 	// will be run that way.
-// 	runSequence('server:clean', 'server:start', () => {
-// 	    // Fire up the watcher on the src folder.
-// 		gulp.watch(
-//             [
-//                 'server/**/*',
-//                 '!server/dist/**/*'
-//             ],
-//             ['restartServer']
-//         );
-// 	});
-// });

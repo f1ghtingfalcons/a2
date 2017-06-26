@@ -7,27 +7,27 @@ const path = require('path');
 
 // clean the contents of the distribution directory
 gulp.task('server:clean', function() {
-    return del('src/server/dist/**/*');
+    return del('server/dist/**/*');
 });
 
 // TypeScript compile
 gulp.task('server:build', function() {
     return gulp
         .src([
-            'src/server/**/*.ts'
+            'server/**/*.ts'
         ], {
-            base: 'src/server'
+            base: 'server'
         })
         .pipe(sourcemaps.init())
         .pipe(typescript(tscConfig.compilerOptions))
         .pipe(sourcemaps.write(
             '.', {
-                sourceRoot: path.resolve('./src/server'),
-                destPath: 'src/server/dist',
+                sourceRoot: path.resolve('./server'),
+                destPath: 'server/dist',
                 includeContent: false
             }
         ))
-        .pipe(gulp.dest('src/server/dist'));
+        .pipe(gulp.dest('server/dist'));
 });
 
 gulp.task('server:cleanBuild', function name(cb) {
