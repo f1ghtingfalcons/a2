@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Mailer = require("nodemailer");
 var StubTransport = require('nodemailer-stub-transport');
+var DirectTransport = require('nodemailer-direct-transport');
 var rxjs_1 = require("@reactivex/rxjs");
 var fileio = require("./shared/fileio");
 /**
@@ -31,7 +32,7 @@ var Emailer = (function () {
             this.transporter = Mailer.createTransport(StubTransport());
         }
         else {
-            this.transporter = Mailer.createTransport();
+            this.transporter = Mailer.createTransport(DirectTransport());
         }
         this.sendEmailStream = rxjs_1.Observable.bindNodeCallback(function (options, callback) {
             _this.transporter.sendMail(options, callback);

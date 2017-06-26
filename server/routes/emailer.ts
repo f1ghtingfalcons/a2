@@ -1,5 +1,6 @@
 import Mailer = require('nodemailer');
-const StubTransport = require('nodemailer-stub-transport')
+const StubTransport = require('nodemailer-stub-transport');
+const DirectTransport = require('nodemailer-direct-transport');
 import { Observable } from '@reactivex/rxjs';
 import { User } from './shared/ldap.model';
 import * as fileio from './shared/fileio';
@@ -18,7 +19,7 @@ export class EmailProperties {
  * Email service, reads a text file to get contents for email
  */
 export class Emailer {
-    transporter: Mailer.Transporter;
+    transporter;
     sendEmailStream;
 
     /**
@@ -28,7 +29,7 @@ export class Emailer {
         if ( debug ) {
             this.transporter = Mailer.createTransport(StubTransport());
         } else {
-            this.transporter = Mailer.createTransport();
+            this.transporter = Mailer.createTransport(DirectTransport());
         }
         this.sendEmailStream = Observable.bindNodeCallback( ( options, callback ) => {
             this.transporter.sendMail (options, callback );
