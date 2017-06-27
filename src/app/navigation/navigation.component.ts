@@ -3,24 +3,24 @@ import { Router } from '@angular/router';
 import { Page, PagePermissions } from './page';
 import { MdDialog, MdDialogRef } from '@angular/material';
 
-const freeAccess : PagePermissions = new PagePermissions( false, false );
-const adminOnly : PagePermissions = new PagePermissions( true, true );
-const loggedInAccess : PagePermissions = new PagePermissions( true, false );
+const freeAccess: PagePermissions = new PagePermissions( false, false );
+const adminOnly: PagePermissions = new PagePermissions( true, true );
+const loggedInAccess: PagePermissions = new PagePermissions( true, false );
 
 @Component({
-    selector: 'nav-bar',
+    selector: 'app-nav-bar',
     templateUrl: './navigation.component.html',
     styleUrls: ['./navigation.component.css']
 })
 
 /** Dynamic Navigation Bar Component */
 export class NavigationComponent {
-    router : Router;
-    menuOpen : boolean = false;
-    username : string;
-    isLoggedIn : boolean = false;
-    isAdmin : boolean = false;
-    pages : Page[] = [
+    router: Router;
+    menuOpen = false;
+    username: string;
+    isLoggedIn = false;
+    isAdmin = false;
+    pages: Page[] = [
         new Page( 'Users', 'users', freeAccess ),
         new Page( 'Groups', 'groups', loggedInAccess ),
         new Page( 'Create', 'create', adminOnly ),
@@ -29,14 +29,14 @@ export class NavigationComponent {
     ];
 
 
-    constructor( private _router : Router, public loginDialog : MdDialog ) {
+    constructor( private _router: Router, public loginDialog: MdDialog ) {
         this.router = _router;
     }
 
     /**
      * Returns whether or not a link points to the current page
      */
-    isActive( page: Page ) : boolean {
+    isActive( page: Page ): boolean {
         if ( '/' + page.url === this.router.url ) {
             return true;
         } else {
@@ -56,7 +56,7 @@ export class NavigationComponent {
      */
     logout() {
         // Note: this will update $scope.isLoggedIn via the OnAuthChange event
-        //AuthenticationService.Logout();
+        // AuthenticationService.Logout();
     }
 
     /**
@@ -82,7 +82,7 @@ export class NavigationComponent {
 }
 
 @Component({
-  selector: 'login-dialog',
+  selector: 'app-login-dialog',
   templateUrl: 'login-dialog.html',
 })
 export class LoginDialogComponent {

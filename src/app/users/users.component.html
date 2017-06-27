@@ -1,20 +1,20 @@
-<div fxLayout="row" fxFlexAlign="center">
+<div fxFlex fxLayout="row" fxLayoutAlign="center">
     <div fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="70">
         <md-list>
             <md-list-item>
-                <p fxFlex="33">Name</p>
-                <p fxFlex="33">Email</p>
-                <p fxFlex="33">Group</p>
+                <p fxFlex="33" fxFlex.xs="50">Name</p>
+                <p fxFlex="33" fxHide.xs>Email</p>
+                <p fxFlex="33" fxFlex.xs="50">Group</p>
             </md-list-item>
             <md-divider></md-divider>
             <p md-subheader>Click on a user to see or edit their profile (editing requires special permissions).</p>
             <md-list-item *ngFor="let user of users | paginate: { itemsPerPage: 10, currentPage: p }">
-                <div fxFlex="33">
+                <div fxFlex="33" fxFlex.xs="50">
                     <md-icon>person</md-icon>
                     <span>{{user.cn}}</span>
                 </div>
-                <div fxFlex="33" class="email-field">{{user.mail}}</div>
-                <div fxFlex="33">
+                <div fxFlex="33" fxHide.xs class="email-field">{{user.mail}}</div>
+                <div fxFlex="33" fxFlex.xs="50">
                     <md-list class="group-list">
                         <md-list-item md-line class="group-list-item" *ngFor="let group of user.groups">
                             <div>{{group}}</div>
