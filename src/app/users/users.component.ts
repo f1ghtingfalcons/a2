@@ -10,6 +10,7 @@ export class UsersComponent implements OnInit {
     p: number = 1;
     users: {}[] = [];
     errorMessage: string;
+    loadingUsers = true;
 
     constructor( private usersService: UsersService ) {}
 
@@ -20,8 +21,14 @@ export class UsersComponent implements OnInit {
     getUsers() {
         this.usersService.getAllUsers().subscribe(
             users => {
-                this.users = users },
-            error => this.errorMessage = <any>error
+                this.users = users.sort(function(a, b) {
+                    var textA = a.cn.toUpperCase();
+                    var textB = b.cn.toUpperCase();
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                });
+            },
+            error => this.errorMessage = <any>error,
+            () => this.loadingUsers = false
         );
     }
 }
