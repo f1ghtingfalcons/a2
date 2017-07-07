@@ -1,0 +1,12 @@
+.container {
+    margin-top: 32px;
+}
+
+.group-list {
+    list-style: none;
+    padding: 0;
+}
+
+.group-list li {
+    height: 32px;
+}

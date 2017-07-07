@@ -5,20 +5,25 @@ import { NgModule } from '@angular/core';
 import { MaterialModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UsersComponent } from './users/users.component';
 import { NavigationComponent, LoginDialogComponent } from './navigation/navigation.component';
-import { UsersService } from './shared/users.service';
+import * as httpService from './http-services/index';
+import * as shared from './shared/index';
 
 @NgModule({
     declarations: [
         AppComponent,
         UsersComponent,
         NavigationComponent,
-        LoginDialogComponent
+        LoginDialogComponent,
+        shared.SearchBoxComponent,
+        shared.AutocompleteComponent,
+        shared.SearchUsersPipe
     ],
     imports: [
         BrowserModule,
@@ -28,13 +33,15 @@ import { UsersService } from './shared/users.service';
         FlexLayoutModule,
         HttpModule,
         JsonpModule,
-        NgxPaginationModule
+        NgxPaginationModule,
+        FormsModule
     ],
     entryComponents: [
         LoginDialogComponent
     ],
     providers: [
-        UsersService
+        httpService.UsersService,
+        httpService.GroupsService
     ],
     bootstrap: [AppComponent]
 })

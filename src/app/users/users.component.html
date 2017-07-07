@@ -1,27 +1,36 @@
 <div fxFlex fxLayout="row" fxLayoutAlign="center">
-    <div fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="70">
-        <md-nav-list>
-            <md-list-item>
+    <div class="container" fxFlex="100" fxFlex.gt-sm="80" fxFlex.gt-md="70">
+        <app-search-box (textChange)="searchText = $event"></app-search-box>
+        <md-list>
+            <md-list-item disableRipple>
                 <p fxFlex="30" fxFlex.xs="50">Name</p>
                 <p fxFlex="30" fxHide.xs>Email</p>
                 <p fxFlex="30" fxFlex.xs="50">Group</p>
                 <p fxFlex="10" fxHide.xs>Account Locked</p>
             </md-list-item>
+        </md-list>
+        <md-nav-list>
             <md-divider></md-divider>
             <md-progress-bar *ngIf="loadingUsers" color="accent" mode="indeterminate"></md-progress-bar>
             <h3 md-subheader>Click on a user to see or edit their profile (editing requires special permissions).</h3>
-            <md-list-item *ngFor="let user of users | paginate: { itemsPerPage: 25, currentPage: p }">
+            <md-list-item disableRipple *ngFor="let user of users | SearchUsers: searchText | paginate: { itemsPerPage: 25, currentPage: p }">
                 <div fxFlex="30" fxFlex.xs="50">
                     <md-icon>person</md-icon>
                     {{user.cn}}
                 </div>
                 <div fxFlex="30" fxHide.xs class="email-field">{{user.mail}}</div>
                 <div fxFlex="30" fxFlex.xs="50">
-                    <md-list class="group-list">
-                        <md-list-item md-line class="group-list-item" *ngFor="let group of user.groups">
-                            <div>{{group}}</div>
-                        </md-list-item>
-                    </md-list>
+                    <ul class="group-list">
+                        <li *ngFor="let group of user.groups">
+                            {{group}}
+                            <button md-icon-button>
+                                <md-icon color="warn">close</md-icon>
+                            </button>
+                        </li>
+                        <li *ngIf="!loadingGroups">
+                            <app-autocomplete></app-autocomplete>
+                        </li>
+                    </ul>
                 </div>
                 <div fxFlex="10" fxHide.xs>
                     <md-icon *ngIf="user.nsAccountLock.toUpperCase() === 'TRUE'">lock</md-icon>

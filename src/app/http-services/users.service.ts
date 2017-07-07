@@ -1,24 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import { handleError } from './util';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
 const LdapURL = 'http://localhost:3040/';
 
+// list of dns restricted from viewing/editing
+const restrictedUserList: string[] = [
+    'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu',
+    'cn=Directory Manager',
+    'uid=pwmproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
+    'uid=pwmtest,ou=People,dc=lasp,dc=colorado,dc=edu',
+    'uid=shibproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
+    'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu'
+];
+
 @Injectable()
 export class UsersService {
 
     constructor (private http: Http) {}
-
-    restrictedUserList : string[] = [
-        'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu',
-        'cn=Directory Manager',
-        'uid=pwmproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
-        'uid=pwmtest,ou=People,dc=lasp,dc=colorado,dc=edu',
-        'uid=shibproxy,ou=People,dc=lasp,dc=colorado,dc=edu',
-        'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu'
-    ];
 
     /**
      * returns an array of group names. In LDAP if a user only belongs to one
@@ -26,7 +28,7 @@ export class UsersService {
      * a single object array instead.
      */
     private normalizeGroups( groups ) {
-        var normalizedGroups = [];
+        let normalizedGroups = [];
         if ( Array.isArray( groups ) ) {
             normalizedGroups = groups.map( function( group ) {
                 /**
@@ -56,7 +58,7 @@ export class UsersService {
                                 user.groups = this.normalizeGroups( user.memberOf );
                             })
                             return users.filter( user => {
-                                return this.restrictedUserList.indexOf( user.dn ) < 0;
+                                return restrictedUserList.indexOf( user.dn ) < 0;
                             });
                         })
                         .catch(this.handleError)
@@ -139,18 +141,4 @@ export class UsersService {
                         .map(res => res.json())
                         .catch(this.handleError);
     };
-
-    private handleError (error: Response | any) {
-        // In a real world app, you might use a remote logging infrastructure
-        let errMsg: string;
-        if (error instanceof Response) {
-        const body = error.json() || '';
-        const err = body.error || JSON.stringify(body);
-        errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-        } else {
-        errMsg = error.message ? error.message : error.toString();
-        }
-        console.error(errMsg);
-        return Observable.throw(errMsg);
-    }
 }
