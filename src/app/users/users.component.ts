@@ -45,4 +45,12 @@ export class UsersComponent implements OnInit {
             () => this.loadingGroups = false
         )
     }
+
+    addToGroup( user: User, group: Group ) {
+        this.groupsService.addUserToGroup( user, group ).subscribe(
+            () => {},
+            error => this.errorMessage = <any>error,
+            () => this.sucess = true
+        )
+    }
 }

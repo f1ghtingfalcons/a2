@@ -3,10 +3,12 @@ import * as crypto from 'crypto-browserify';
 /** LDAP user object */
 export class User {
     cn: string;
+    dn: string;
     givenName: string;
     sn: string;
     displayName: string;
     nsAccountLock = 'true';
+    groups: string[];
 
     constructor(
         public uid: string,
@@ -27,4 +29,9 @@ export class User {
 /** LDAP Group Object */
 export class Group {
     constructor( public cn: string, public uniqueMember: string[] = [] ) {}
+}
+
+/** LDAP Change Object */
+export class LdapChange {
+    constructor( public operation: string, public modification: {} ) {}
 }
