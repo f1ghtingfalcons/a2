@@ -83,7 +83,7 @@ export function authenticateToken( token: TokenInfo ): AuthStatus {
     //  * if decoded.expires === NaN then
     //      NaN < Date.now() === false // incorrectly skips error block
     //      !(NaN > Date.now()) === true // correctly enters error block
-    if ( !(token.expires > Date.now()) ) {
+    if ( !(token.exp > Date.now()) ) {
         return AuthStatus.TokenExpired;
     }
 

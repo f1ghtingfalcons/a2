@@ -68,7 +68,7 @@ export class UsersService {
     /**
      * Get a user profile by user id.
      */
-    getById = function( username, timeout ) {
+    getById = function( username: string ) {
         return this.http.get( LdapURL + 'api/v1/users/' + username )
                         .map(res => res.json())
                         .map( user => {

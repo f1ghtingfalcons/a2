@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../http-services/users.service';
 import { GroupsService } from '../http-services/groups.service';
-import { User, Group, userSort } from '../shared/index';
+import { User, Group, userSort, ActivityLogService } from '../shared/index';
 
 @Component({
   selector: 'app-users',
@@ -17,7 +17,8 @@ export class UsersComponent implements OnInit {
     loadingUsers: boolean;
     loadingGroups: boolean;
 
-    constructor( private usersService: UsersService, private groupsService: GroupsService ) {}
+    constructor( private usersService: UsersService, private groupsService: GroupsService,
+                 private activityLog: ActivityLogService ) {}
 
     ngOnInit() {
         this.getUsers();
@@ -46,11 +47,19 @@ export class UsersComponent implements OnInit {
         )
     }
 
-    addToGroup( user: User, group: Group ) {
+    addToGroup( user: User, group: string ) {
         this.groupsService.addUserToGroup( user, group ).subscribe(
-            () => {},
-            error => this.errorMessage = <any>error,
-            () => this.sucess = true
+            () => this.activityLog.log(user.cn + ' sucessfully added to group ' + group),
+            error => this.activityLog.error('Error adding user ' + user.cn + ' to group ' + group + ' : ' + <any>error),
+            () => {}
+        )
+    }
+
+    removeFromGroup( user: User, group: string ) {
+        this.groupsService.removeUserFromGroup( user, group ).subscribe(
+            () => this.activityLog.log(user.cn + ' sucessfully removed from group ' + group),
+            error => this.activityLog.error('Error removing user ' + user.cn + ' from group ' + group + ' : ' + <any>error),
+            () => {}
         )
     }
 }

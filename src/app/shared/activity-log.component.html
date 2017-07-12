@@ -1,0 +1,19 @@
+<div class="activity-log-container">
+    <button md-button class="activity-show-btn" (click)="toggleLog()">Activity Log</button>
+    <div class="activity-log" [style.max-height.px]="logHeight" [@logState]="logState">
+        <md-list>
+            <md-list-item class="activity" *ngFor="let activity of activities">
+                <div class="activity-flag" [class.good]="activity.valid === 0" [class.bad]="activity.valid === 2"></div>
+                <p>{{activity.timeStamp}}</p>
+                <p>{{activity.text}}</p>
+                <span fxFlex></span>
+                <button md-icon-button (click)="removeActivity( activity )">
+                    <md-icon class="md-secondary">close</md-icon>
+                </button>
+            </md-list-item>
+            <md-list-item *ngIf="activities.length === 0">
+                <h4>No Activity Yet</h4>
+            </md-list-item>
+        </md-list>
+    </div>
+</div>

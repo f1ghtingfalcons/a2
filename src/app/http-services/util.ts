@@ -1,5 +1,6 @@
 import { Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/throw';
 
 export function handleError (error: Response | any) {
     // In a real world app, you might use a remote logging infrastructure

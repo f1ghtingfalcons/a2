@@ -23,7 +23,7 @@
                     <ul class="group-list">
                         <li *ngFor="let group of user.groups">
                             {{group}}
-                            <button md-icon-button>
+                            <button md-icon-button (click)="removeFromGroup(user,group)">
                                 <md-icon color="warn">close</md-icon>
                             </button>
                         </li>

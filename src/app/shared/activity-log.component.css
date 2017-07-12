@@ -1,0 +1,63 @@
+.activity-log-container {
+    position: fixed;
+    max-width: 1024px;
+    width: 100%;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%,0);
+}
+
+.activity-log {
+    box-shadow: 0px 6px 6px -3px rgba(0, 0, 0, 0.2), 0px 10px 14px 1px rgba(0, 0, 0, 0.14), 0px 4px 18px 3px rgba(0, 0, 0, 0.12);
+    background-color: #fff;
+    overflow: auto;
+    max-height: 400;
+}
+
+.activity-show-btn {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translate(-50%,0);
+    cursor: pointer;
+    width: 128px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    color: rgba(255,255,255,0.87);
+    background-color: rgba(64,196,255,1);
+    border: none;
+    font-size: 1em;
+}
+
+.activity {
+    height: 80px;
+    margin-left: 32px;
+    margin-right: 32px;
+    background-color: #fff;
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
+}
+
+.activity-log h4 {
+    width: 100%;
+    text-align: center;
+}
+
+.activity-log p {
+    margin-right: 16px;
+}
+
+.activity-flag {
+    height: 78px;
+    width: 8px;
+    margin-right: 16px;
+}
+
+.good {
+    background-color: #8BC34A;
+
+}
+
+.bad {
+    background-color: #F44336;
+}

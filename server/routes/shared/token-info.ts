@@ -1,5 +1,5 @@
 import * as config from './config';
-import * as jwt from 'jwt-simple';
+import * as jwt from 'jsonwebtoken';
 
 
 /**
@@ -15,14 +15,14 @@ export class TokenInfo {
      * Serialize and encrypt a TokenInfo object
      */
     public static encrypt( token: TokenInfo ): string {
-        return jwt.encode( token, config.secret );
+        return jwt.sign( token, config.secret );
     }
 
     /**
      * Decrypt and deserialize a TokenInfo object
      */
     public static decrypt( tokenStr: string ): TokenInfo {
-        const decoded = jwt.decode( tokenStr, config.secret );
+        const decoded = jwt.verify( tokenStr, config.secret );
 
         const getOrThrow = key => {
             if ( decoded.hasOwnProperty(key) ) {
@@ -36,7 +36,6 @@ export class TokenInfo {
             getOrThrow('username'),
             Boolean(getOrThrow('isAdmin')),
             decoded['userRegex'],
-            decoded['path'],
             Number(getOrThrow('expires'))
         );
     }
@@ -50,15 +49,11 @@ export class TokenInfo {
         public username: string,
         public isAdmin: boolean,
         public userRegex?: string[],
-        public path?: string,
-        public expires?: number
+        public exp?: number
     ) {
-        if ( typeof this.expires === 'undefined' ) {
+        if ( typeof this.exp === 'undefined' ) {
             const dateObj = new Date();
-            this.expires = dateObj.setDate( dateObj.getDate() + config.tokenLifetimeDays );
-        }
-        if ( typeof this.path === 'undefined' ) {
-            this.path = '/';
+            this.exp = dateObj.setDate( dateObj.getDate() + config.tokenLifetimeDays );
         }
     }
 }

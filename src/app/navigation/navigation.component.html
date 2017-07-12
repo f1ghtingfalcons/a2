@@ -12,16 +12,18 @@
                 {{page.label}}
             </a>
             <div class="spacer"></div>
-            <button md-button *ngIf="!isLoggedIn" (click)="showLogin()">LOGIN</button>
-            <div *ngIf="isLoggedIn">{{nav.username}}</div>
-            <button *ngIf="isLoggedIn" md-icon-button [mdMenuTriggerFor]="menu">
+            <button md-button *ngIf="!auth.loggedIn" (click)="showLogin()">LOGIN</button>
+            <a md-button class="nav-item" *ngIf="auth.loggedIn">
+                {{auth.loggedInUser}}
+            </a>
+            <button *ngIf="auth.loggedIn" md-icon-button [mdMenuTriggerFor]="menu">
                 <md-icon>more_vert</md-icon>
             </button>
             <md-menu #menu="mdMenu">
-                <button md-button *ngIf="isAdmin">
-                    <a [href]="admin">ADMIN</a>
+                <button md-menu-item *ngIf="isAdmin">
+                    <a [href]="admin">Admin</a>
                 </button>
-                <button md-button (click)="logout()">LOGOUT</button>
+                <button md-menu-item (click)="logout()">Logout</button>
             </md-menu>
         </ul>
     </md-toolbar>

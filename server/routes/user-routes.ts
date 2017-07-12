@@ -133,9 +133,6 @@ export function authorize( req: Request, res: Response ) {
     const rememberMe = req.body.hasOwnProperty('rememberMe')
         ? req.body.rememberMe
         : false;
-    const path = req.body.hasOwnProperty('path')
-        ? req.body.path
-        : '/';
 
     let userFound = false;
     ldap.authorize( username, password ).subscribe(
@@ -145,33 +142,9 @@ export function authorize( req: Request, res: Response ) {
             const token = new TokenInfo(
                 username,
                 userInfo.isAdmin,
-                userInfo.userRegex,
-                path
+                userInfo.userRegex
             );
             const tokenStr = TokenInfo.encrypt(token);
-
-            // Bundle the tokenStr up in a cookie
-            // If rememberMe===false, the cookie should be a
-            // "session cookie" which will expire when the browser
-            // is closed. Otherwise, the cookie should have a
-            // fixed expiration date per the settings in config.ts
-            //
-            // Note that the cookie expiration date is separate
-            // from the 'expires' date that's stored inside the
-            // encrypted token. The session will effectively expire
-            // when either the cookie is deleted/expires, or
-            // becomes invalid due to the internal 'expires' date
-            // passing, whichever comes first.
-            const cookieOptions: any = {};
-            cookieOptions.path = token.path; // sets the valid base for the cookie
-            if ( rememberMe ) {
-                cookieOptions.maxAge = tokenLifetimeDays * 24 * 60 * 60 * 1000; // tokenLifetimeDays in milliseconds,
-            }
-            res.cookie(
-                authCookieName,
-                tokenStr,
-                cookieOptions
-            );
 
             // log a sucessful authentication
             logger.info( req, {
@@ -188,11 +161,9 @@ export function authorize( req: Request, res: Response ) {
             //
             // The JSON object returned here should be identical to the
             // one returned by sessionInfo()
-            res.status(200).json( token );
+            res.status(200).json( tokenStr );
         },
         error => {
-            // kill any existing sessions, just to be safe
-            deleteAuthCookie(res);
 
             // send a warning to the logs for failures
             logger.warn( req, {
@@ -201,15 +172,11 @@ export function authorize( req: Request, res: Response ) {
                 error: error
             });
 
-             console.log( error );
-
             // error is set on invalid username or password
             res.status( 401 ).json({ error: 'Invalid username or password' });
         },
         () => {
             if ( !userFound ) {
-                // kill any existing sessions, just to be safe
-                deleteAuthCookie(res);
 
                 // error is set on invalid username or password
                 res.status( 401 ).json({ error: 'Invalid username or password' });

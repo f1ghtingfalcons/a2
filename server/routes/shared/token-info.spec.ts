@@ -9,7 +9,6 @@ describe('Token Service', function() {
         'ltester',
         false,
         [],
-        '/',
         100
     );
 

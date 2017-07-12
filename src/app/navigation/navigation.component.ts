@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Page, PagePermissions } from './page';
 import { MdDialog, MdDialogRef } from '@angular/material';
+import { AuthService } from '../http-services/auth.service';
+import { NgForm } from '@angular/forms';
 
 const freeAccess: PagePermissions = new PagePermissions( false, false );
 const adminOnly: PagePermissions = new PagePermissions( true, true );
@@ -17,9 +19,6 @@ const loggedInAccess: PagePermissions = new PagePermissions( true, false );
 export class NavigationComponent {
     router: Router;
     menuOpen = false;
-    username: string;
-    isLoggedIn = false;
-    isAdmin = false;
     pages: Page[] = [
         new Page( 'Users', 'users', freeAccess ),
         new Page( 'Groups', 'groups', loggedInAccess ),
@@ -29,7 +28,7 @@ export class NavigationComponent {
     ];
 
 
-    constructor( private _router: Router, public loginDialog: MdDialog ) {
+    constructor( private _router: Router, public loginDialog: MdDialog, private auth: AuthService ) {
         this.router = _router;
     }
 
@@ -52,11 +51,10 @@ export class NavigationComponent {
     }
 
     /**
-     * Request logout from the backend and delete auth cookies
+     * Delete the token and reset logged in variables
      */
     logout() {
-        // Note: this will update $scope.isLoggedIn via the OnAuthChange event
-        // AuthenticationService.Logout();
+        this.auth.logout();
     }
 
     /**
@@ -65,26 +63,27 @@ export class NavigationComponent {
     openMenu() {
         this.menuOpen = !this.menuOpen;
     }
-
-    /**
-     * Determines whether the logged in user has permission
-     * to access a link
-     */
-    routeIsAvailable( page: Page ) {
-        if ( page.permissions.needsAdmin ) {
-            return this.isAdmin;
-        }
-        if ( page.permissions.needsLogin ) {
-            return this.username;
-        }
-        return true;
-    }
 }
 
 @Component({
-  selector: 'app-login-dialog',
-  templateUrl: 'login-dialog.html',
+    selector: 'app-login-dialog',
+    templateUrl: 'login-dialog.html'
 })
 export class LoginDialogComponent {
-  constructor(public dialogRef: MdDialogRef<LoginDialogComponent>) {}
+    loggingIn = false;
+    loginError: string;
+
+    constructor(public dialogRef: MdDialogRef<LoginDialogComponent>, private auth: AuthService ) {}
+
+    login( f: NgForm ) {
+        this.loggingIn = true;
+        this.auth.login( f.value ).subscribe(
+            () => this.loggingIn = false,
+            error => {
+                this.loginError = error
+                this.loggingIn = false;
+            },
+            () => this.dialogRef.close()
+        );
+    }
 }

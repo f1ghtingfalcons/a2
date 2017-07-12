@@ -22,8 +22,7 @@ import 'rxjs/add/operator/distinctUntilChanged';
         state('nonEmpty', style({
             transform: 'scale(1)'
         })),
-        transition('empty => nonEmpty', animate('120ms ease-in')),
-        transition('nonEmpty => empty', animate('120ms ease-out'))
+        transition('empty <=> nonEmpty', animate('120ms ease-in-out'))
     ])
   ]
 })
