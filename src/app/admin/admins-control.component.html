@@ -1,0 +1,32 @@
+<h2>Site Administrators</h2>
+<div>
+    <md-list>
+        <h4>Current Admins</h4>
+        <md-list-item *ngFor="let entry of adminList">
+            <md-icon>person</md-icon>
+            <div class="md-list-item-text">
+                <h3>{{entry.cn}}</h3>
+                <p>{{entry.mail}}</p>
+            </div>
+            <md-icon class="md-secondary" (click)="removeAdmin(entry.uid)">close</md-icon>
+        </md-list-item>
+    </md-list>
+    <md-divider></md-divider>
+    <h3>Add new Admin</h3>
+    <app-search-box></app-search-box>
+    <div class="admin-content" *ngIf="!selectedItem">
+        No User Selected
+    </div>
+    <div *ngIf="selectedItem">
+        <md-list>
+            <md-list-item class="md-2-line">
+                <md-icon>person</md-icon>
+                <div class="md-list-item-text">
+                    <h3>{{selectedItem.cn}}</h3>
+                    <p>{{selectedItem.mail}}</p>
+                </div>
+            </md-list-item>
+        </md-list>
+    </div>
+    <button md-raised-button color="accent" class="add-admin-btn" (click)="addAdmin( selectedItem )">Add to admins</button>
+</div>
