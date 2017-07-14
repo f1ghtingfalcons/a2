@@ -18,9 +18,11 @@ export interface LoginForm {
 export class AuthService {
     // Create a stream of logged in status to communicate throughout app
     loggedIn: boolean;
-    loggedInUser: string;
     loggedIn$ = new BehaviorSubject<boolean>(this.loggedIn);
+    loggedInUser: string;
     loggedInUser$ = new BehaviorSubject<string>(this.loggedInUser);
+    loggedInAdmin: boolean;
+    loggedInAdmin$ = new BehaviorSubject<boolean>(this.loggedInAdmin);
     jwt: JwtHelper = new JwtHelper();
 
     constructor(private router: Router, private http: Http, private usersService: UsersService ) {
@@ -36,6 +38,8 @@ export class AuthService {
             const token = this.jwt.decodeToken( localStorage.getItem('token') );
             this.loggedInUser$.next(token.username);
             this.loggedInUser = token.username;
+            this.loggedInAdmin$.next(token.isAdmin);
+            this.loggedInAdmin = token.isAdmin;
         }
         this.loggedIn$.next(value);
         this.loggedIn = value;

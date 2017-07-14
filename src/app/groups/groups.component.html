@@ -1,0 +1,68 @@
+<div fxLayout="row">
+    <md-card class="groups-card" fxFlex="40">
+        <app-search-box></app-search-box>
+        <div class="instructions" *ngIf="groupList.length === 0 && !loadingGroups">
+            You are not seeing any groups here because you are not an admin or a project lead.
+            If you would like to edit the users of a group, please contact a site admin
+            to be added as a project lead.
+        </div>
+        <md-spinner *ngIf="loadingGroups" class="groups-loader" color="warn"></md-spinner>
+        <md-list class="groups-list">
+            <md-list-item *ngFor="let group of groupList | paginate: { itemsPerPage: 15, currentPage: p }">
+                <p>{{group.cn}}</p>
+                <button md-icon-button (click)="addGroup(group)" mdTooltip="Select">
+                    <md-icon>add</md-icon>
+                </button>
+            </md-list-item>
+        </md-list>
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+    </md-card>
+    <md-card class="groups-card" fxFlex="60">
+        <md-card-subtitle class="groups-subheader" [ngClass]="{'not-saved': dirty}">
+            <span>Selected</span>
+            <span class="right" *ngIf="dirty">Changes not saved</span>
+        </md-card-subtitle>
+        <app-search-box></app-search-box>
+        <md-list class="groups-list">
+            <md-list-item *ngFor="let group of selectedGroups">
+                <md-card fxFlex fxLayout="column">
+                    <div fxLayout="row">
+                        <h4 style="margin-bottom: 0; padding-bottom: 0;">{{group.cn}}</h4>
+                        <span fxFlex></span>
+                        <button md-icon-button (click)="removeGroup($index)" mdTooltip="Remove">
+                            <md-icon>remove</md-icon>
+                        </button>
+                    </div>
+                    <div fxLayout="column">
+                        <div fxLayout="row">
+                            <p>Users</p>
+                            <button md-raised-button (click)="showUsers=true">Show</button>
+                            <button md-raised-button (click)="showUsers=false">Hide</button>
+                        </div>
+                        <md-chip-list *ngIf="showUsers">
+                            <md-chip *ngFor="let user of group.users" color="accent" selectable="false">
+                                <strong>{{user.cn}}</strong>
+                                <em>({{user.uid}})</em>
+                                <button md-icon-button (click)="addToRemoveList(group, user)">
+                                    <md-icon>close</md-icon>
+                                </button>
+                            </md-chip>
+                            <md-chip *ngFor="let user of selectedEmployees" color="accent" selectable="false">
+                                <strong>{{user.cn}}</strong>
+                                <em>({{user.uid}})</em>
+                                <button md-icon-button (click)="removeEmployee(user)">
+                                    <md-icon>close</md-icon>
+                                </button>
+                            </md-chip>
+                        </md-chip-list>
+                    </div>
+                </md-card>
+            </md-list-item>
+        </md-list>
+        <div class="groups-fab-box">
+            <button md-fab class="groups-update-btn" (click)="mapRoles()" [hidden]="!dirty" mdTooltip="Update Group(s)">
+                <md-icon>save</md-icon>
+            </button>
+        </div>
+    </md-card>
+</div>

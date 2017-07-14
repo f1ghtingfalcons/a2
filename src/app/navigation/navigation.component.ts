@@ -63,6 +63,10 @@ export class NavigationComponent {
     openMenu() {
         this.menuOpen = !this.menuOpen;
     }
+
+    gotoAdminPage() {
+        this._router.navigate(['/admin']);
+    }
 }
 
 @Component({

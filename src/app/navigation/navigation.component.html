@@ -20,9 +20,7 @@
                 <md-icon>more_vert</md-icon>
             </button>
             <md-menu #menu="mdMenu">
-                <button md-menu-item *ngIf="isAdmin">
-                    <a [href]="admin">Admin</a>
-                </button>
+                <button md-menu-item *ngIf="auth.loggedInAdmin" (click)="gotoAdminPage()">Admin</button>
                 <button md-menu-item (click)="logout()">Logout</button>
             </md-menu>
         </ul>

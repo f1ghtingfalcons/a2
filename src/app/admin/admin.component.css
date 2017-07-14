@@ -1,0 +1,44 @@
+:host {
+    position: absolute;
+    height: 100%;
+}
+
+.sidenav {
+    width: 320px;
+}
+
+.active-tab {
+    background-color: #90CAF9;
+}
+
+.admin-panel {
+    background-color: rgb(224,224,224);
+    height: 100%;
+}
+
+.admin-panel>div{
+    height: 100%;
+}
+
+.admin-menu {
+    list-style: none;
+    padding: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.sidenav-button {
+    border-radius: 0;
+    cursor: pointer;
+    display: block;
+    align-items: inherit;
+    line-height: 40px;
+    margin: 0;
+    max-height: 40px;
+    overflow: hidden;
+    padding: 0px 16px;
+    text-align: left;
+    text-decoration: none;
+    white-space: normal;
+    width: 100%;
+}

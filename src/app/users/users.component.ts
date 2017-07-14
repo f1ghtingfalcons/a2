@@ -9,7 +9,6 @@ import { User, Group, userSort, ActivityLogService } from '../shared/index';
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
-    p = 1; // used by our pagination module to index pages
     users: User[] = [];
     groups: Group[] = [];
     searchText: string;

@@ -1,0 +1,25 @@
+<md-card class="center list-tool">
+    <h2>List Tool</h2>
+    <div class="md-padding">
+        <p>Use this tool to compare active users in a group to a list of users. Please submit lists of user emails in CSV format. For example: </p>
+        <figure class="highlight">
+        <pre>
+<code>email1@eml.com, email2@eml.com</code>
+        </pre>
+        </figure>
+    </div>
+    <div class="center">
+        <div class="step-one">
+            <p>Select a group</p>
+            <app-search-box></app-search-box>
+        </div>
+        <div class="step-two">
+            <p>Paste CSV</p>
+            <textarea [(ngModel)]="csv" class="list-tool-csv"></textarea>
+        </div>
+    </div>
+    <div class="center">
+        <button md-raised-button color="accent" (click)="analyze()">Analyze!</button>
+        <p color="warn" *ngIf="error">{{error}}</p>
+    </div>
+</md-card>

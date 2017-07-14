@@ -1,0 +1,59 @@
+.about{
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about h1 {
+    width: 100%;
+    text-align: center;
+}
+
+.about .blurb {
+    display: block;
+}
+
+.about .blurb p {
+    font-size: 1.2em;
+}
+
+.about .logo {
+    display: block;
+    width: 25%;
+    height: 25%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.about h3 {
+    margin-bottom: 0;
+}
+
+.about .release-notes {
+    width: 100%;
+}
+
+.about .release-notes div {
+    height: 240px;
+    overflow: auto;
+}
+
+.about-card {
+    background: #fff;
+    width: 100%;
+    min-height: 700px;
+}
+
+.steps {
+    padding: 8px;
+    background-color: #EEEEEE;
+    border-radius: 4px;
+    text-align: center;
+}
+
+@media (min-width: 960px) {
+    .about md-card {
+        min-width: 600px;
+        width: 50%;
+    }
+}

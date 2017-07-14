@@ -13,7 +13,7 @@
             <md-divider></md-divider>
             <md-progress-bar *ngIf="loadingUsers" color="accent" mode="indeterminate"></md-progress-bar>
             <h3 md-subheader>Click on a user to see or edit their profile (editing requires special permissions).</h3>
-            <md-list-item disableRipple *ngFor="let user of users | SearchUsers: searchText | paginate: { itemsPerPage: 25, currentPage: p }">
+            <md-list-item disableRipple *ngFor="let user of users | SearchUsers: searchText | paginate: { itemsPerPage: 15, currentPage: p }">
                 <div fxFlex="30" fxFlex.xs="50">
                     <md-icon>person</md-icon>
                     {{user.cn}}
