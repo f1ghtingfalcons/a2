@@ -38,6 +38,7 @@ export function authenticateTokenStr( tokenStr: string ): { status: AuthStatus, 
     try {
         token = TokenInfo.decrypt(tokenStr);
     } catch (e) {
+        console.log(e);
         return {
             status: AuthStatus.InvalidToken,
             token: null
@@ -240,5 +241,5 @@ export function authenticateEditorMiddleware( req: Request, res: Response, next:
  * undefined if the token was not found.
  */
 export function getTokenStr( req: Request ): string {
-    return req.cookies[config.authCookieName];
+    return req.headers.authorization ? req.headers.authorization.split(' ')[1] : undefined;
 }

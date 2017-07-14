@@ -15,8 +15,8 @@
         </md-input-container>
         <md-input-container color="accent">
             <md-icon mdPrefix color="accent">lock_outline</md-icon>
-            <input mdInput ngModel type="password" name="password" required placeholder="Password"/>
-            <md-error *ngIf="!username.valid || !username.pristine">
+            <input mdInput ngModel type="password" name="password" required placeholder="Password" #password="ngModel"/>
+            <md-error *ngIf="!password.valid || !password.pristine">
                 Password is Required
             </md-error>
         </md-input-container>

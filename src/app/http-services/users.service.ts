@@ -3,6 +3,7 @@ import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { handleError } from './util';
 import { User, Group } from '../shared/ldap.model';
+import { AuthHttp } from 'angular2-jwt';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 
@@ -21,7 +22,7 @@ const restrictedUserList: string[] = [
 @Injectable()
 export class UsersService {
 
-    constructor (private http: Http) {}
+    constructor (private http: Http, private authHttp: AuthHttp ) {}
 
     /**
      * returns an array of group names. In LDAP if a user only belongs to one
@@ -80,7 +81,7 @@ export class UsersService {
     /**
      * Get a user profile by email
      */
-    getByEmail = function( email, timeout ) {
+    getByEmail = function( email: string ) {
         return this.http.get( LdapURL + 'api/v1/users/email/' + email )
                         .map(res => res.json())
                         .map( user => {
@@ -92,8 +93,8 @@ export class UsersService {
     /**
      * Add a new user to LDAP
      */
-    createUser = function( user ) {
-        return this.http.post( LdapURL + 'api/v1/admin/users/', user )
+    createUser = function( user: User ) {
+        return this.authHttp.post( LdapURL + 'api/v1/admin/users/', user )
                         .map(res => res.json())
                         .catch(this.handleError);
     };
@@ -102,7 +103,7 @@ export class UsersService {
      * Submit an LDAP update to an existing user
      */
     updateUser = function( user, update ) {
-        return this.http.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
                         .map(res => res.json())
                         .catch(this.handleError);
     };
@@ -111,7 +112,7 @@ export class UsersService {
      * Remove a user from LDAP
      */
     deleteUser = function( username ) {
-        return this.http.delete( LdapURL + 'api/v1/admin/users/' + username )
+        return this.authHttp.delete( LdapURL + 'api/v1/admin/users/' + username )
                         .map(res => res.json())
                         .catch(this.handleError);
     };
@@ -120,7 +121,7 @@ export class UsersService {
      * Lock a user account
      */
     lockUser = function( username ) {
-        return this.http.put( LdapURL + 'api/v1/admin/users/lock' + username )
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/lock' + username )
                         .map(res => res.json())
                         .catch(this.handleError);
     };
@@ -129,7 +130,7 @@ export class UsersService {
      * Unlock a user account
      */
     unlockUser = function( username ) {
-        return this.http.put( LdapURL + 'api/v1/admin/users/unlock' + username )
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/unlock' + username )
                         .map(res => res.json())
                         .catch(this.handleError);
     };
@@ -138,7 +139,7 @@ export class UsersService {
      * Reset a user account
      */
     resetUser = function( username ) {
-        return this.http.put( LdapURL + 'api/v1/admin/users/reset' + username )
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/reset' + username )
                         .map(res => res.json())
                         .catch(this.handleError);
     };

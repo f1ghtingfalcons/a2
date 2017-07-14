@@ -13,24 +13,21 @@ import { AuthHttp, AuthConfig } from 'angular2-jwt';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UsersComponent } from './users/users.component';
+import { CreateComponent } from './create/create.component'
 import { NavigationComponent, LoginDialogComponent } from './navigation/navigation.component';
 import * as httpService from './http-services/index';
 import * as shared from './shared/index';
 
 /** Setup Basic Authentication for our app */
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
-    return new AuthHttp(new AuthConfig(
-    {
-        tokenName: 'token',
-        tokenGetter: (() => sessionStorage.getItem('token')),
-        globalHeaders: [{'Content-Type': 'application/json'}],
-    }), http, options);
+    return new AuthHttp(new AuthConfig(), http, options);
 }
 
 @NgModule({
     declarations: [
         AppComponent,
         UsersComponent,
+        CreateComponent,
         NavigationComponent,
         LoginDialogComponent,
         shared.SearchBoxComponent,
@@ -47,6 +44,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         HttpModule,
         JsonpModule,
         NgxPaginationModule,
+        ReactiveFormsModule,
         FormsModule
     ],
     entryComponents: [

@@ -1,0 +1,57 @@
+<div class="create-tabs" fxLayout="row" fxLayoutAlign="center center">
+        <div fxLayout.gt-sm="row" fxLayout="column" fxFlex fxFlex.gt-md="70" fxFlex.gt-sm="80">
+            <md-card class="create-user-half">
+                <form [formGroup]="form" class="create-form" (ngSubmit)="onSubmit()">
+                    <h2>Create User</h2>
+                    <md-input-container class="half-width" color="accent">
+                        <md-icon mdPrefix>person</md-icon>
+                        <input mdInput formControlName="cn" class="form-control" placeholder="First Name"/>
+                    </md-input-container>
+                    <md-input-container class="half-width" color="accent">
+                        <input mdInput formControlName="sn" class="form-control" placeholder="Last Name"/>
+                    </md-input-container>
+                    <md-input-container class="full-width" color="accent">
+                        <md-icon mdPrefix>email</md-icon>
+                        <input mdInput formControlName="mail" type="email" class="form-control" placeholder="Email"/>
+                    </md-input-container>
+                    <md-input-container class="full-width" color="accent">
+                        <input mdInput formControlName="uid" class="form-control" placeholder="Username"/>
+                    </md-input-container>
+                    <button md-fab class="queue-user-fab" mdTooltip="Queue New User" [disabled]="dataLoading || form.invalid || usernameError || emailTaken">
+                        <md-icon>arrow_forward</md-icon>
+                    </button>
+                </form>
+            </md-card>
+            <div class="queue-user-list create-user-half">
+                <md-list class="queue">
+                    <h3 md-subheader [ngClass]="{ 'not-saved': userQ.length > 0 }">Queue <span *ngIf="userQ.length > 0"> - Changes Not Saved</span></h3>
+                    <md-list-item>
+                        <p fxFlex="30">Name</p>
+                        <p fxFlex="40">Email</p>
+                        <p fxFlex="20">Username</p>
+                        <p fxFlex="10"></p>
+                    </md-list-item>
+                    <md-divider></md-divider>
+                    <md-list-item class="user-queue-item" *ngFor="let user of userQ">
+                        <p fxFlex="30">{{user.cn}} {{user.sn}}</p>
+                        <p fxFlex="40">{{user.mail}}</p>
+                        <p fxFlex="20">{{user.uid}}</p>
+                        <div fxFlex="10">
+                            <button md-icon-button (click)="removeUser(user)" mdTooltip="Remove">
+                                <md-icon>remove</md-icon>
+                            </button>
+                        </div>
+                    </md-list-item>
+                </md-list>
+                <div layout="row" layout-align="end end">
+                    <md-checkbox [(ngModel)]="invite">Invite Users Via Email</md-checkbox>
+                    <button md-raised-button (click)="clearUsers()" color="warn" [disabled]="userQ.length === 0 || dataLoading">Clear</button>
+                    <button md-raised-button (click)="registerUsers()" color="accent" [disabled]="userQ.length === 0 || dataLoading">Register Users</button>
+                </div>
+                <div fxLayout="row" fxLayoutAlign="end end">
+                    <div [hidden]="!queueError" class="new-user-warn-text">{{queueError}}</div>
+                </div>
+            </div>
+            <md-progress-bar *ngIf="dataLoading" color="accent" mode="indeterminate"></md-progress-bar>
+        </div>
+</div>

@@ -36,7 +36,7 @@ export class TokenInfo {
             getOrThrow('username'),
             Boolean(getOrThrow('isAdmin')),
             decoded['userRegex'],
-            Number(getOrThrow('expires'))
+            Number(getOrThrow('exp'))
         );
     }
 

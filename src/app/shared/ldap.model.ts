@@ -9,6 +9,7 @@ export class User {
     displayName: string;
     nsAccountLock = 'true';
     groups: string[];
+    invite: boolean;
 
     constructor(
         public uid: string,
