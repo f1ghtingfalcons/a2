@@ -11,7 +11,7 @@
     <div class="center">
         <div class="step-one">
             <p>Select a group</p>
-            <app-search-box></app-search-box>
+            <app-autocomplete [list]="groups" [placeholder]="'Search Groups'"></app-autocomplete>
         </div>
         <div class="step-two">
             <p>Paste CSV</p>

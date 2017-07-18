@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService, GroupsService } from '../http-services/index';
-import { User, Group } from '../shared/ldap.model';
-import { ActivityLogService } from '../shared/activity-log.service';
+import { User, Group, ActivityLogService } from '../shared/index';
 import { MdDialog, MdDialogRef } from '@angular/material';
 
 @Component({
@@ -12,14 +11,14 @@ import { MdDialog, MdDialogRef } from '@angular/material';
 export class ToolsComponent implements OnInit {
     csv = '';
     error = '';
-    groupList: Group[];
-    userList: User[];
+    groups: Group[];
+    users: User[];
     selectedGroup: Group;
 
     constructor( private usersService: UsersService,
                  private groupsService: GroupsService,
-                private activityLog: ActivityLogService,
-                public toolListDialog: MdDialog ) {}
+                 private activityLog: ActivityLogService,
+                 public toolListDialog: MdDialog ) {}
 
     ngOnInit() {
         this.loadUserList();
@@ -32,7 +31,7 @@ export class ToolsComponent implements OnInit {
      * a user group.
      */
     queryGroups( query ) {
-        return this.groupList;
+        return this.groups;
     }
 
     /**
@@ -40,7 +39,7 @@ export class ToolsComponent implements OnInit {
      */
     loadUserList() {
         this.usersService.getAllUsers().subscribe(
-            users => this.userList = users,
+            users => this.users = users,
             error => this.activityLog.error( error )
         );
     }
@@ -50,7 +49,7 @@ export class ToolsComponent implements OnInit {
      */
     loadGroupList() {
         this.groupsService.getAllGroups().subscribe(
-            groups => this.groupList = groups,
+            groups => this.groups = groups,
             error => this.activityLog.error( error )
         );
     }
@@ -93,13 +92,13 @@ export class ToolsComponent implements OnInit {
         let list: any[] = this.csv.split(',');
         // ensure no users are undefined
         nonExistentUsers = list.filter( email => {
-            return !this.userList.some( obj => {
+            return !this.users.some( obj => {
                 return this.compareEmails( obj.mail, email );
             });
         });
         // get user dns based on email addresses
         list = list.map( email => {
-            return this.userList.find( obj => {
+            return this.users.find( obj => {
                 return this.compareEmails( obj.mail, email );
             });
         });

@@ -9,7 +9,9 @@ import { prodSplunkHEC, devSplunkHEC } from './config';
 
 const logDirectory = './server/logs';
 // ensure log directory exists
-fs.existsSync( logDirectory ) || fs.mkdirSync( logDirectory );
+if ( !fs.existsSync( logDirectory ) ) {
+    fs.mkdirSync( logDirectory );
+}
 
 // create a rotating write stream
 const accessLogStream = FileStreamRotator.getStream({
@@ -130,29 +132,13 @@ export class Logger {
      * @param {Request} req - The incoming http request
      */
     private getOperator( req: Request ): String {
-        const { status, token } = authentication.authenticateRequest( req, false );
+        const { error, token } = authentication.authenticateRequest( req, false );
 
         let username: String;
 
-        if ( status === authentication.AuthStatus.Success ) {
-            if ( token === null ) {
-                // token may be null even for AuthStatus.Success
-                // this happens, e.g., with OPTIONS requests that
-                // come from CORS preflight requests.
-                username = '<<nulltoken>>';
-            } else {
-                username = token.username;
-            }
-        } else if ( status === authentication.AuthStatus.MissingToken ) {
-            username = '<<unauthenticated>>';
-        } else if ( status === authentication.AuthStatus.InvalidToken ) {
-            username = '<<invalidtoken>>';
-        } else if ( status === authentication.AuthStatus.InvalidUsername ) {
-            username = '<<invalidusername>>';
-        } else if ( status === authentication.AuthStatus.TokenExpired ) {
-            username = `<<expiredtoken-${token.username}>>`;
-        } else {
-            throw new Error(`Programmer Error: Unrecognized AuthStatus: ${status}`);
+        // if there is an authentication error, simply report it as the username
+        if ( error ) {
+            username = '<<' + error + '>>';
         }
 
         return username;

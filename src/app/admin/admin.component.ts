@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService, GroupsService } from '../http-services/index';
-import { User, Group } from '../shared/ldap.model';
-import { ActivityLogService } from '../shared/activity-log.service';
+import { User, Group, ActivityLogService } from '../shared/index';
 
 @Component({
   selector: 'app-admin',
@@ -10,8 +9,8 @@ import { ActivityLogService } from '../shared/activity-log.service';
 })
 export class AdminComponent implements OnInit {
     projectList = [];
-    employeeList: User;
-    groupList: Group;
+    users: User;
+    groups: Group;
 
     constructor( private usersService: UsersService, private groupsService: GroupsService, private activityLog: ActivityLogService ) {}
 
@@ -26,7 +25,7 @@ export class AdminComponent implements OnInit {
      */
     loadEmployeeList() {
         this.usersService.getAllUsers().subscribe(
-            users => this.employeeList = users,
+            users => this.users = users,
             error => this.activityLog.error( error )
         );
     }
@@ -36,7 +35,7 @@ export class AdminComponent implements OnInit {
      */
     loadGroupList() {
         this.groupsService.getAllGroups().subscribe(
-            groups => this.groupList = groups,
+            groups => this.groups = groups,
             error => this.activityLog.error( error )
         );
     }

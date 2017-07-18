@@ -13,11 +13,11 @@ export class GroupsComponent implements OnInit {
     dirty = false;
     loadingGroups = true;
     searchEmployeeText = '';
-    SearchGroupText = '';
+    searchGroupText = '';
     selectedEmployees = [];
     selectedGroups = [];
-    employeeList = [];
-    groupList = [];
+    users = [];
+    groups = [];
     lookupList = [];
     userRegex: string[] = [];
 
@@ -54,30 +54,12 @@ export class GroupsComponent implements OnInit {
     */
 
     /**
-     * Search the employee list for matching text. quickSearch
-     * does a text search of all parameters in an object. In this case,
-     * a user object.
-     */
-    queryEmployees( query ) {
-        return this.employeeList;
-    }
-
-    /**
-     * Search the group list for matching text. quickSearch
-     * does a text search of all parameters in an object. In this case,
-     * a group object.
-     */
-    queryGroups( query ) {
-        return this.groupList;
-    }
-
-    /**
      * Loads a list of all LDAP users.
      */
     loadEmployeeList() {
         this.usersService.getAllUsers().subscribe(
             users => {
-                this.employeeList = users;
+                this.users = users;
                 this.lookupList = users;
             },
             error => this.activityLog.error('Error retrieving users.<br /><br />' + error)
@@ -96,23 +78,19 @@ export class GroupsComponent implements OnInit {
         this.groupsService.getAllGroups().subscribe(
             groups => {
                 if ( this.auth.loggedInAdmin ) {
-                    this.groupList = groups;
+                    this.groups = groups;
                 } else {
-                    this.groupList =  groups.filter( this._checkRegex );
+                    this.groups =  groups.filter( ( obj ) => {
+                        return this.userRegex.some( function( regex ) {
+                            return obj.cn.search( regex ) !== -1 ;
+                        });
+                    });
                 }
+                this.groups = groups;
             },
             error => this.activityLog.error('Error retrieving groups.<br /><br />' + error),
             () => this.loadingGroups = false
         )
-    }
-
-    /**
-     * Checks an ldap object against a regex, object must have cn property
-     */
-    private _checkRegex( obj ) {
-        return this.userRegex.some( function( regex ) {
-            return obj.cn.search( regex ) !== -1 ;
-        });
     }
 
     /**
@@ -157,7 +135,7 @@ export class GroupsComponent implements OnInit {
         });
 
         this.selectedEmployees = [];
-        this.employeeList = this.lookupList;
+        this.users = this.lookupList;
         while ( this.selectedGroups.length > 0 ) {
             this.removeGroup( 0 );
         }
@@ -172,19 +150,19 @@ export class GroupsComponent implements OnInit {
      */
     addEmployee( name ) {
         this.dirty = true;
-        const actualIndex = this.employeeList.indexOf( name );
+        const actualIndex = this.users.indexOf( name );
         if ( actualIndex < 0 ) {
             return;
         }
-        this.selectedEmployees.push( this.employeeList[actualIndex] );
-        this.employeeList.splice( actualIndex, 1 );
+        this.selectedEmployees.push( this.users[actualIndex] );
+        this.users.splice( actualIndex, 1 );
     }
 
     /**
      * Remove a user from the new user group add list
      */
     removeEmployee( employee ) {
-        this.employeeList.push( employee );
+        this.users.push( employee );
     }
 
     /**
@@ -225,7 +203,7 @@ export class GroupsComponent implements OnInit {
      * and remove users.
      */
     addGroup( group ) {
-        const actualIndex = this.groupList.indexOf( group );
+        const actualIndex = this.groups.indexOf( group );
         if ( actualIndex < 0 ) {
             return;
         }
@@ -241,7 +219,7 @@ export class GroupsComponent implements OnInit {
         });
         group.usersToRemove = [];
         // group.users = $filter( 'orderBy' )( group.users, 'cn' );
-        this.groupList.splice( actualIndex, 1 );
+        this.groups.splice( actualIndex, 1 );
         // this.selectedGroup = null;
         // this.searchGroupText = '';
     }
@@ -251,7 +229,7 @@ export class GroupsComponent implements OnInit {
      * not apply to this group.
      */
     removeGroup( index ) {
-        this.groupList.push( this.selectedGroups[index] );
+        this.groups.push( this.selectedGroups[index] );
         // vm.groupList = $filter( 'orderBy' )( vm.groupList, 'cn' );
         this.selectedGroups.splice( index, 1 );
         if ( this.selectedGroups.length === 0 ) {

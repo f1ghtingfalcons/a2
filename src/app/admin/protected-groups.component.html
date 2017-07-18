@@ -1,0 +1,18 @@
+<div fxLayout="row" fxLayoutAlign="center start">
+    <md-card fxFlex.gt-sm="50">
+        <h2>Protected Groups</h2>
+        <p>This list contains groups that will not be viewable in the main app. This protects them from being accidentaly removed and cleans up the interface. This is
+            useful for system accounts and required roles that users do not need to be aware of. Click on results from the search box below to add them to this list.
+        </p>
+        <md-list>
+            <h3 md-subheader>Protected Groups</h3>
+            <md-list-item *ngFor="let group of protectedList">
+                <p>{{group.cn}}</p>
+                <md-icon (click)="removeGroup( entry )">close</md-icon>
+            </md-list-item>
+        </md-list>
+        <md-divider></md-divider>
+        <h3>Add new group</h3>
+        <app-autocomplete [list]="groups"></app-autocomplete>
+    </md-card>
+</div>

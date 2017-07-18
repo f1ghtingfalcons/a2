@@ -16,7 +16,8 @@ export class UsersComponent implements OnInit {
     loadingUsers: boolean;
     loadingGroups: boolean;
 
-    constructor( private usersService: UsersService, private groupsService: GroupsService,
+    constructor( private usersService: UsersService,
+                 private groupsService: GroupsService,
                  private activityLog: ActivityLogService ) {}
 
     ngOnInit() {

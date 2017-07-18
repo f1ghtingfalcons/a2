@@ -2,24 +2,24 @@
 <div>
     <md-list>
         <h4>Current Admins</h4>
-        <md-list-item *ngFor="let entry of adminList">
+        <md-list-item *ngFor="let admin of adminList">
             <md-icon>person</md-icon>
             <div class="md-list-item-text">
-                <h3>{{entry.cn}}</h3>
-                <p>{{entry.mail}}</p>
+                <h3>{{admin.cn}}</h3>
+                <p>{{admin.mail}}</p>
             </div>
-            <md-icon class="md-secondary" (click)="removeAdmin(entry.uid)">close</md-icon>
+            <md-icon (click)="removeAdmin(admin.uid)">close</md-icon>
         </md-list-item>
     </md-list>
     <md-divider></md-divider>
     <h3>Add new Admin</h3>
-    <app-search-box></app-search-box>
-    <div class="admin-content" *ngIf="!selectedItem">
+    <app-autocomplete [list]="users" [placeholder]="'Search and Add User'"></app-autocomplete>
+    <div *ngIf="!selectedItem">
         No User Selected
     </div>
     <div *ngIf="selectedItem">
         <md-list>
-            <md-list-item class="md-2-line">
+            <md-list-item>
                 <md-icon>person</md-icon>
                 <div class="md-list-item-text">
                     <h3>{{selectedItem.cn}}</h3>

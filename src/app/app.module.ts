@@ -30,6 +30,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
 @NgModule({
     declarations: [
         AppComponent,
+        shared.ActivityLogComponent,
+        shared.AutocompleteComponent,
         UsersComponent,
         CreateComponent,
         AboutComponent,
@@ -45,9 +47,9 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         NavigationComponent,
         LoginDialogComponent,
         shared.SearchBoxComponent,
-        shared.AutocompleteComponent,
         shared.SearchUsersPipe,
-        shared.ActivityLogComponent
+        shared.SearchGroupsPipe,
+        shared.SearchTextPipe
     ],
     imports: [
         BrowserModule,
@@ -65,10 +67,13 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         LoginDialogComponent
     ],
     providers: [
+        shared.ActivityLogService,
         httpService.UsersService,
         httpService.GroupsService,
         httpService.AuthService,
-        shared.ActivityLogService,
+        httpService.LogService,
+        httpService.AdminService,
+        httpService.ProtectedGroupsService,
         {
             provide: AuthHttp,
             useFactory: authHttpServiceFactory,

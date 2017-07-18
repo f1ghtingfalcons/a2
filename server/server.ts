@@ -10,8 +10,6 @@ const app = express();
 
 // setup http bodyparser
 app.use( bodyParser.json() );
-// setup cookie middleware
-app.use( cookieParser() );
 // compress all requests
 app.use( compression() );
 

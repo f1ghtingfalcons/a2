@@ -22,22 +22,13 @@ export class TokenInfo {
      * Decrypt and deserialize a TokenInfo object
      */
     public static decrypt( tokenStr: string ): TokenInfo {
-        const decoded = jwt.verify( tokenStr, config.secret );
-
-        const getOrThrow = key => {
-            if ( decoded.hasOwnProperty(key) ) {
-                return decoded[key];
-            } else {
-                throw new Error('Failed to decode token');
-            }
-        };
-
-        return new TokenInfo(
-            getOrThrow('username'),
-            Boolean(getOrThrow('isAdmin')),
-            decoded['userRegex'],
-            Number(getOrThrow('exp'))
-        );
+        let decoded;
+        try {
+            decoded = jwt.verify( tokenStr, config.secret );
+        } catch ( error ) {
+            throw new Error('Failed to decode token: ' + error );
+        }
+        return decoded;
     }
 
     /**
@@ -49,11 +40,10 @@ export class TokenInfo {
         public username: string,
         public isAdmin: boolean,
         public userRegex?: string[],
-        public exp?: number
+        public expiresIn?: number
     ) {
-        if ( typeof this.exp === 'undefined' ) {
-            const dateObj = new Date();
-            this.exp = dateObj.setDate( dateObj.getDate() + config.tokenLifetimeDays );
+        if ( typeof this.expiresIn === 'undefined' ) {
+            this.expiresIn = 24 * 60 * 60; // 1 Day in seconds
         }
     }
 }

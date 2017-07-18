@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { ACTIVITY_LOG_NAME } from './config';
+import { ACTIVITY_LOG_NAME } from '../shared/config';
 import { ActivityLogService } from './activity-log.service';
-import {  } from '@angular/common'
 
 const MAX_HEIGHT = 400;
 const MESSAGE_HEIGHT = 100;

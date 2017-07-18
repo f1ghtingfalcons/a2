@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Activity, Validity } from './activity-log.component';
-import { ACTIVITY_LOG_NAME } from './config';
+import { ACTIVITY_LOG_NAME } from '../shared/config';
 
 @Injectable()
 /** This service allows us to stream activites to the log from external components */

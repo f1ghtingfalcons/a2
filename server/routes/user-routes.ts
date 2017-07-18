@@ -152,15 +152,6 @@ export function authorize( req: Request, res: Response ) {
                 target: username
             });
 
-            // The secure token will be sent to the client via
-            // cookie, but we will also send basic info about the session
-            // via a JSON object in the response body. Since the client
-            // doesn't have the ability to decrypt the token this will
-            // be their only way to display information about the session
-            // (like the username, and when the session expires).
-            //
-            // The JSON object returned here should be identical to the
-            // one returned by sessionInfo()
             res.status(200).json( tokenStr );
         },
         error => {
@@ -173,13 +164,12 @@ export function authorize( req: Request, res: Response ) {
             });
 
             // error is set on invalid username or password
-            res.status( 401 ).json({ error: 'Invalid username or password' });
+            res.status( 401 ).json({ error: error });
         },
         () => {
             if ( !userFound ) {
-
                 // error is set on invalid username or password
-                res.status( 401 ).json({ error: 'Invalid username or password' });
+                res.status( 401 ).json({ error: 'Username Invalid' });
             }
         }
     );
@@ -217,12 +207,12 @@ export function deauthorize( req: Request, res: Response ) {
  * returned by authenticate()
  */
 export function sessionInfo( req: Request, res: Response ) {
-    const { status, token } = authentication.authenticateRequest( req, false );
-    if ( status === authentication.AuthStatus.Success ) {
-        res.status(200).json(token);
-    } else {
+    const { error, token } = authentication.authenticateRequest( req, false );
+    if ( error ) {
         res.status(500).send();
         throw new Error('Programmer Error: token should already be validated by now');
+    } else {
+        res.status(200).json(token);
     }
 }
 

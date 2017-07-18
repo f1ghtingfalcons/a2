@@ -4,6 +4,8 @@
 import * as userRoutes from './user-routes';
 import { User } from './shared/ldap.model';
 import { superUser, superPass } from './shared/config';
+import * as jwt from 'jsonwebtoken';
+import { secret } from './shared/config';
 const http_mocks = require('node-mocks-http');
 
 function buildResponse() {
@@ -28,8 +30,8 @@ describe('User Routes', function() {
             method: 'POST',
             url: '/api/v1/admin/users/ltester',
             body: {
-                username: 'ltester',
-                firstName: 'LDAP',
+                uid: 'ltester',
+                cn: 'LDAP',
                 invite: false
             }
         });
@@ -37,7 +39,7 @@ describe('User Routes', function() {
         response.on('end', function() {
             expect( response.statusCode ).toBe( 400 );
             expect( response._getData() ).toEqual( JSON.stringify({
-                'error': 'The following required parameters were missing: lastName, email'
+                'error': 'The following required parameters were missing: sn, mail'
             }));
             done();
         });
@@ -50,10 +52,10 @@ describe('User Routes', function() {
             method: 'POST',
             url: '/api/v1/admin/users/',
             body: {
-                username: 'ltester',
-                firstName: 'LDAP',
-                lastName: 'Tester',
-                email: 'ltester@fake.edu',
+                uid: 'ltester',
+                cn: 'LDAP',
+                sn: 'Tester',
+                mail: 'ltester@fake.edu',
                 password: 'secret',
                 invite: false
             }
@@ -104,7 +106,7 @@ describe('User Routes', function() {
             expect( response.statusCode ).toBe( 200 );
             // we can't check the expiration date or token since both will change with time
             // but we can check to see if an object with the username is returned.
-            const respObj = JSON.parse(response._getData());
+            const respObj: any = jwt.verify( JSON.parse(response._getData()), secret);
             expect( respObj.username ).toBe( 'ltester' );
             expect( respObj.isAdmin ).toBe( false );
             done();
@@ -127,7 +129,7 @@ describe('User Routes', function() {
             expect( response.statusCode ).toBe( 200 );
             // we can't check the expiration date or token since both will change with time
             // but we can check to see if an object with the username is returned.
-            const respObj = JSON.parse(response._getData());
+            const respObj: any = jwt.verify( JSON.parse(response._getData()), secret);
             expect( respObj.username ).toBe( superUser );
             expect( respObj.isAdmin ).toBe( true );
             done();

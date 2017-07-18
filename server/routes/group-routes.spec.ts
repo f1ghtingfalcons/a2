@@ -36,8 +36,8 @@ describe('Group Routes', function() {
             params: {
                 id: 'PwmAdmins'
             },
-            cookies: {
-                'roleman-token': TokenInfo.encrypt( token )
+            headers: {
+                'Authorization': 'Bearer ' + TokenInfo.encrypt( token )
             },
             body: {
                 operation: 'add',
@@ -52,6 +52,9 @@ describe('Group Routes', function() {
 
         response.on('end', function() {
             expect( response.statusCode ).toBe( 200 );
+            if ( response.statusCode !== 200 ) {
+                console.log( 'Response message: ' + response._getData() );
+            }
             done();
         });
 
@@ -85,8 +88,8 @@ describe('Group Routes', function() {
             params: {
                 id: 'PwmAdmins'
             },
-            cookies: {
-                'roleman-token': TokenInfo.encrypt( token )
+            headers: {
+                'Authorization': 'Bearer ' + TokenInfo.encrypt( token )
             },
             body: {
                 operation: 'delete',

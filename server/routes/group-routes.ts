@@ -92,8 +92,11 @@ export function update( req: Request, res: Response ) {
     }
 
     // check to ensure the logged in user has permission to update this group
-    const { status, token } = authentication.authenticateRequest( req, false );
-    if ( status === authentication.AuthStatus.Success ) {
+    const { error, token } = authentication.authenticateRequest( req, false );
+    if ( error ) {
+        res.status(401).json({ 'message': 'Authentication error: ' +  error });
+        return;
+    } else {
         if ( !token.isAdmin ) {
             const validGroup = token.userRegex.some( regex => new RegExp(regex, 'gi').test(cn) );
             if ( !validGroup ) {
@@ -101,9 +104,6 @@ export function update( req: Request, res: Response ) {
                 return;
             }
         }
-    } else {
-        res.status(401).json({ 'message': 'You need to login to update groups' });
-        return;
     }
 
     const searchGroup = {
@@ -114,8 +114,8 @@ export function update( req: Request, res: Response ) {
         .switchMap( result => ldap.update( result.dn, change ))
         .subscribe(
             responseHandler.noop,
-            error => {
-                responseHandler.handleServerError( error, ldapErrorText, res);
+            err => {
+                responseHandler.handleServerError( err, ldapErrorText, res);
             },
             () => {
                 // if we are adding new members, we want to log each users update

@@ -33,13 +33,13 @@
             <app-log></app-log>
         </div>
         <div *ngIf="activeTab==='admins'">
-            <app-admins-control employee-list="employeeList"></app-admins-control>
+            <app-admins-control [users]="users"></app-admins-control>
         </div>
         <div *ngIf="activeTab==='manage'">
-            <app-projects employee-list="employeeList" group-list="groupList"></app-projects>
+            <app-projects></app-projects>
         </div>
         <div *ngIf="activeTab==='protected'">
-            <app-protected-groups group-list="groupList"></app-protected-groups>
+            <app-protected-groups [groups]="groups"></app-protected-groups>
         </div>
         <div *ngIf="activeTab==='email'">
             <app-email-edit></app-email-edit>

@@ -1,18 +1,10 @@
 import * as express from 'express';
 
-import * as config from './config';
+import { secret } from './config';
 import { Request, Response } from 'express';
 import { assertSanitaryUsername } from './credentials';
 import { TokenInfo } from './token-info';
-
-export enum AuthStatus {
-    Success = 0,
-    MissingToken,
-    InvalidToken,
-    InvalidUsername,
-    TokenExpired,
-    RequiresAdmin
-};
+import * as jwt from 'jsonwebtoken';
 
 /**
  * Given a token string that was created via TokenInfo.encrypt
@@ -33,102 +25,29 @@ export enum AuthStatus {
  *
  * This method will never throw.
  */
-export function authenticateTokenStr( tokenStr: string ): { status: AuthStatus, token: TokenInfo} {
-    let token: TokenInfo;
+export function authenticateTokenStr( token: string ): { error: string, token: TokenInfo } {
+    const auth = {
+        error: null,
+        token: null
+    }
     try {
-        token = TokenInfo.decrypt(tokenStr);
-    } catch (e) {
-        console.log(e);
-        return {
-            status: AuthStatus.InvalidToken,
-            token: null
-        }
+        auth.token = jwt.verify( token, secret );
+    } catch ( error ) {
+        auth.error = error;
     }
-
-    return {
-        status: authenticateToken( token ),
-        token: token
-    };
-}
-
-/**
- * Given a token, assess its validity. This will check that
- * the username is sanitary (according to
- * ./credentials.assertSanitaryUsername) and that the expires
- * time has not passed yet.
- *
- * This method will return one of the following statuses:
- * AuthStatus.InvalidUsername
- * AuthStatus.TokenExpired
- * AuthStatus.Success
- *
- * This method will never throw.
- */
-export function authenticateToken( token: TokenInfo ): AuthStatus {
-    // Assert that the username isn't potentially
-    // dangerous (doesn't contain any injection attacks)
-    try {
-        assertSanitaryUsername( token.username );
-    } catch ( err ) {
-        return AuthStatus.InvalidUsername;
-    }
-
-    // Check if the token has expired yet
-    //
-    // Note: the weird order of the conditional here
-    // is to prevent certain edge cases from succeeding
-    // incorrectly. The 'normal' way to write this would
-    // be "if( decoded.expires < Date.now() ) {...}"
-    // but that has the following weird edge case:
-    //
-    //  * if decoded.expires === NaN then
-    //      NaN < Date.now() === false // incorrectly skips error block
-    //      !(NaN > Date.now()) === true // correctly enters error block
-    if ( !(token.exp > Date.now()) ) {
-        return AuthStatus.TokenExpired;
-    }
-
-    return AuthStatus.Success;
+    return auth;
 }
 
 /**
  * Given a request, test whether this request is properly
- * authenticated (i.e. if all the necessary cookies are in
- * order and not expired).
+ * authenticated.
  *
- * This method is intended to be used by code that would
- * like to manually check authentication status. To
- * automatically check authentication status in the Express
- * framework, see authenticateMiddleware.
- *
- * If the request is an OPTIONS request (which are not supposed
- * to contain credentials) the return value will be
- * {
- *      status: AuthStatus.Success
- *      token: null
- * }
- *
- * If the request is authenticated this method will return
- * {
- *      status: AuthStatus.Success
- *      token: token
- * }
- *
- * If the request does not contain the expected cookie (and
- * it's not an OPTIONS request), the return value will be
- * {
- *      status: AuthStatus.MissingToken,
- *      token: null
- * }
- *
- * Otherwise, the return value will be equivalent to:
- * authenticateTokenStr( tokenCookieValue )
  */
-export function authenticateRequest( req: Request, requiresAdmin: boolean ): { status: AuthStatus, token: TokenInfo} {
+export function authenticateRequest( req: Request, requiresAdmin: boolean ): { error: string, token: TokenInfo} {
     // We skip the token auth for [OPTIONS] requests.
     if ( req.method === 'OPTIONS' ) {
         return {
-            status: AuthStatus.Success,
+            error: null,
             token: null
         }
     }
@@ -139,7 +58,7 @@ export function authenticateRequest( req: Request, requiresAdmin: boolean ): { s
     // Token not found === unauthorized
     if ( !tokenStr ) {
         return {
-            status: AuthStatus.MissingToken,
+            error: 'Missing Authentication Token',
             token: null
         };
     }
@@ -151,34 +70,12 @@ export function authenticateRequest( req: Request, requiresAdmin: boolean ): { s
             return authenticated;
         } else {
             return {
-                status: AuthStatus.RequiresAdmin,
+                error: 'Route Requires Admin Privledges',
                 token: null
             }
         }
     } else {
         return authenticated;
-    }
-}
-
-/**
- * Helper function for the authentication middleware
- * Determines what type of response to send to the client
- * if there was an isssue authenticating a user.
- */
-function respondError( res: Response, status: AuthStatus ) {
-    if ( status === AuthStatus.MissingToken ) {
-        res.status(401).json({ 'message': 'Missing token' });
-    } else if ( status === AuthStatus.InvalidToken ) {
-        res.status(401).json({ 'message': 'Invalid token' });
-    } else if ( status === AuthStatus.InvalidUsername ) {
-        res.status(401).json({ 'message': 'Found invalid username in token'});
-    } else if ( status === AuthStatus.TokenExpired ) {
-        res.status(400).json({ 'message': 'Token Expired' });
-    } else if ( status === AuthStatus.RequiresAdmin ) {
-        res.status(401).json({ 'message': 'Admin Access Required'});
-    } else {
-        res.status(500).send();
-        throw new Error('Programmer Error: Unrecognized AuthStatus: ' + status)
     }
 }
 
@@ -199,13 +96,13 @@ function respondError( res: Response, status: AuthStatus ) {
  * app.use(authentication.authenticateAdminMiddleware);
  * ```
  */
-export function authenticateAdminMiddleware( req: Request, res: Response, next: () => any ) : void {
-    const { status, token } = authenticateRequest( req, true );
+export function authenticateAdminMiddleware( req: Request, res: Response, next: () => any ): void {
+    const { error, token } = authenticateRequest( req, true );
 
-    if ( status === AuthStatus.Success ) {
-        next();
+    if ( error ) {
+        res.status(401).json({ 'message': error });
     } else {
-        respondError( res, status);
+        next();
     }
 }
 
@@ -226,13 +123,13 @@ export function authenticateAdminMiddleware( req: Request, res: Response, next: 
  * app.use(authentication.authenticateEditorMiddleware);
  * ```
  */
-export function authenticateEditorMiddleware( req: Request, res: Response, next: () => any ) : void {
-    const { status, token } = authenticateRequest( req, false );
+export function authenticateEditorMiddleware( req: Request, res: Response, next: () => any ): void {
+    const { error, token } = authenticateRequest( req, false );
 
-    if ( status === AuthStatus.Success ) {
-        next();
+    if ( error ) {
+        res.status(401).json({ 'message': error });
     } else {
-        respondError( res, status);
+        next();
     }
 }
 

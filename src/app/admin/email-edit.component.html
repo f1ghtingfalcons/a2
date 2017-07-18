@@ -1,0 +1,35 @@
+<h2 class="center">Update User Invite Email Text</h2>
+<md-tabs>
+    <md-tab label="New User Email">
+        <md-card class="email-update-box">
+            <p>
+                This text is the standard email that will be sent to a user upon creation.
+                The following expressions will be replaced with their corresponding user variables
+                before the email is sent:
+                <ul>
+                    <li><code ngNonBindable>{{firstName}}</code></li>
+                    <li><code ngNonBindable>{{lastName}}</code></li>
+                    <li><code ngNonBindable>{{userName}}</code></li>
+                </ul>
+            </p>
+            <textarea [(ngModel)]="text" rows="25"></textarea>
+            <button md-raised-button (click)="updateEmail()"><md-icon>save</md-icon></button>
+        </md-card>
+    </md-tab>
+    <md-tab label="Reset Account Email">
+        <md-card class="email-update-box">
+            <p>
+                This text is the email that will be set when a user account is reset within this app.
+                The following expressions will be replaced with their corresponding user variables
+                before the email is sent:
+                <ul>
+                    <li><code ngNonBindable>{{firstName}}</code></li>
+                    <li><code ngNonBindable>{{lastName}}</code></li>
+                    <li><code ngNonBindable>{{userName}}</code></li>
+                </ul>
+            </p>
+            <textarea [(ngModel)]="resetText" rows="25"></textarea>
+            <button md-raised-button (click)="updateResetEmail()"><md-icon>save</md-icon></button>
+        </md-card>
+    </md-tab>
+</md-tabs>

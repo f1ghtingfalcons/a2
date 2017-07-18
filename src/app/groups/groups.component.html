@@ -1,14 +1,14 @@
 <div fxLayout="row">
     <md-card class="groups-card" fxFlex="40">
-        <app-search-box></app-search-box>
-        <div class="instructions" *ngIf="groupList.length === 0 && !loadingGroups">
+        <app-search-box (textChange)="searchGroupText = $event"></app-search-box>
+        <div class="instructions" *ngIf="groups.length === 0 && !loadingGroups">
             You are not seeing any groups here because you are not an admin or a project lead.
             If you would like to edit the users of a group, please contact a site admin
             to be added as a project lead.
         </div>
         <md-spinner *ngIf="loadingGroups" class="groups-loader" color="warn"></md-spinner>
         <md-list class="groups-list">
-            <md-list-item *ngFor="let group of groupList | paginate: { itemsPerPage: 15, currentPage: p }">
+            <md-list-item *ngFor="let group of groups | SearchGroups: searchGroupText | paginate: { itemsPerPage: 15, currentPage: p }">
                 <p>{{group.cn}}</p>
                 <button md-icon-button (click)="addGroup(group)" mdTooltip="Select">
                     <md-icon>add</md-icon>
@@ -22,7 +22,7 @@
             <span>Selected</span>
             <span class="right" *ngIf="dirty">Changes not saved</span>
         </md-card-subtitle>
-        <app-search-box></app-search-box>
+        <app-autocomplete [list]="users" [placeholder]="'Search and Add User'"></app-autocomplete>
         <md-list class="groups-list">
             <md-list-item *ngFor="let group of selectedGroups">
                 <md-card fxFlex fxLayout="column">

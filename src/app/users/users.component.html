@@ -6,7 +6,7 @@
                 <p fxFlex="30" fxFlex.xs="50">Name</p>
                 <p fxFlex="30" fxHide.xs>Email</p>
                 <p fxFlex="30" fxFlex.xs="50">Group</p>
-                <p fxFlex="10" fxHide.xs>Account Locked</p>
+                <p class="lock" fxFlex="10" fxHide.xs>Account Locked</p>
             </md-list-item>
         </md-list>
         <md-nav-list>
@@ -19,7 +19,7 @@
                     {{user.cn}}
                 </div>
                 <div fxFlex="30" fxHide.xs class="email-field">{{user.mail}}</div>
-                <div fxFlex="30" fxFlex.xs="50">
+                <div class="column" fxFlex="30" fxFlex.xs="50">
                     <ul class="group-list">
                         <li *ngFor="let group of user.groups">
                             {{group}}
@@ -28,13 +28,11 @@
                             </button>
                         </li>
                         <li *ngIf="!loadingGroups">
-                            <app-autocomplete></app-autocomplete>
+                            <app-autocomplete [list]="groups"></app-autocomplete>
                         </li>
                     </ul>
                 </div>
-                <div fxFlex="10" fxHide.xs>
-                    <md-icon *ngIf="user.nsAccountLock.toUpperCase() === 'TRUE'">lock</md-icon>
-                </div>
+                <md-icon class="lock" fxFlex="10" fxHide.xs *ngIf="user.nsAccountLock.toUpperCase() === 'TRUE'">lock</md-icon>
             </md-list-item>
         </md-nav-list>
         <pagination-controls (pageChange)="p = $event"></pagination-controls>

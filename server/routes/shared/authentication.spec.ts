@@ -11,16 +11,16 @@ describe('Authentication Service', function() {
 
     it('can authorize a valid token', function() {
         const baseToken = new TokenInfo( 'ltester', false );
-        const tokenStr: any = TokenInfo.encrypt( baseToken );
+        const tokenStr = TokenInfo.encrypt( baseToken );
         const request = http_mocks.createRequest({
-            cookies: {
-                [config.authCookieName]: tokenStr
+            headers: {
+                'Authorization': 'Bearer: ' + tokenStr
             }
         });
 
-        const { status, token } = authentication.authenticateRequest( request, false );
-        expect( status ).toBe( authentication.AuthStatus.Success );
-        expect( token ).toEqual( baseToken );
+        const { error, token } = authentication.authenticateRequest( request, false );
+        expect( error ).toBe( null );
+        expect( token.username ).toEqual( baseToken.username );
     });
 
     it('rejects requests with missing data', function() {
@@ -31,23 +31,8 @@ describe('Authentication Service', function() {
         // so if finish is called via this mechanism it's probably
         // a test failure - however finish is written in such a
         // way that it doesn't really matter.
-        const { status, token } = authentication.authenticateRequest( request, false );
-        expect( status ).toBe( authentication.AuthStatus.MissingToken );
+        const { error, token } = authentication.authenticateRequest( request, false );
+        expect( error ).toBe( 'Missing Authentication Token' );
         expect( token ).toBe( null );
-    });
-
-    it('rejects expired tokens', function() {
-        // 1364892158014 = Apr 02 2013 02:42:38 GMT-0600
-        const baseToken = new TokenInfo( 'ltester', false, [], '/', 1364892158014 );
-        const tokenStr = TokenInfo.encrypt( baseToken );
-        const request = http_mocks.createRequest({
-            cookies: {
-                [config.authCookieName]: tokenStr
-            }
-        });
-
-        const { status, token } = authentication.authenticateRequest( request, false );
-        expect( status ).toBe( authentication.AuthStatus.TokenExpired );
-        expect( token ).toEqual( baseToken );
     });
 });

@@ -9,4 +9,13 @@
 
 .group-list li {
     height: 32px;
+    margin: 8px 0;
+}
+
+.column {
+    padding: 0 16px;
+}
+
+.lock {
+    text-align: center;
 }
