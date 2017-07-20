@@ -218,13 +218,13 @@ export function sessionInfo( req: Request, res: Response ) {
 
 /** Creates a new user object, unless a user already exists in LDAP */
 export function create( req: Request, res: Response ) {
-    if ( !paramCheck.requireParams( req.body, res,  [ 'uid', 'cn', 'sn', 'mail' ] ) ) {
+    if ( !paramCheck.requireParams( req.body, res,  [ 'uid', 'givenName', 'sn', 'mail' ] ) ) {
         return;
     }
     const invite: boolean = req.body.invite;
     const user: User = new User(
         req.body.uid,
-        req.body.cn,
+        req.body.givenName,
         req.body.sn,
         req.body.mail,
         req.body.ojbectClass,

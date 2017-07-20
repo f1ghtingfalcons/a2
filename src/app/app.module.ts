@@ -44,7 +44,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         adminPage.LogComponent,
         adminPage.EmailEditComponent,
         adminPage.ProtectedGroupsComponent,
-        adminPage.ProjectsComponent,
+        adminPage.ProjectListComponent,
         adminPage.DeleteUserComponent,
         NavigationComponent,
         LoginDialogComponent,
@@ -77,6 +77,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         httpService.LogService,
         httpService.AdminService,
         httpService.ProtectedGroupsService,
+        httpService.EmailService,
+        httpService.ProjectService,
         {
             provide: AuthHttp,
             useFactory: authHttpServiceFactory,

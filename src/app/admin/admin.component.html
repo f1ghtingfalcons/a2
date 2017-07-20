@@ -1,4 +1,4 @@
-<md-sidenav-container fxLayout="row" fxFlexFill>
+<md-sidenav-container fullscreen>
     <button md-icon-button class="menu-button" fxHide.gt-sm (click)="sidenav.open()">
         <md-icon>menu</md-icon>
     </button>
@@ -28,7 +28,7 @@
             </li>
         </ul>
     </md-sidenav>
-    <div class="admin-panel" fxFlex>
+    <div>
         <div *ngIf="activeTab==='logs'">
             <app-log></app-log>
         </div>

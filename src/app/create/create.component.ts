@@ -1,14 +1,15 @@
-import { Component, Inject, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../http-services/users.service';
 import { User, Group, ldapSort, ActivityLogService } from '../shared/index';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import 'rxjs/add/operator/do';
 
 @Component({
   selector: 'app-create-user',
   templateUrl: './create.component.html',
   styleUrls: ['./create.component.css']
 })
-export class CreateComponent implements OnChanges {
+export class CreateComponent implements OnInit {
     groups: Group[];
     userQ: User[] = [];
     dataLoading = false;
@@ -20,13 +21,83 @@ export class CreateComponent implements OnChanges {
     emailTakenError = '';
     queueError = '';
 
-    constructor( private usersService: UsersService, private activityLog: ActivityLogService, @Inject(FormBuilder) fb: FormBuilder ) {
-        this.form = fb.group({
-            cn: ['', Validators.required],
+    formErrors = {
+        'givenName': '',
+        'sn': '',
+        'mail': '',
+        'uid': ''
+    };
+
+    validationMessages = {
+        'givenName': {
+            'required': 'First Name is required.',
+        },
+        'sn': {
+            'required': 'Last Name is required.'
+        },
+        'mail': {
+            'required': 'Email is required'
+        },
+        'uid': {
+            'required': 'Username is required'
+        }
+    };
+
+    constructor( private usersService: UsersService,
+                 private activityLog: ActivityLogService,
+                 private fb: FormBuilder ) {}
+
+    ngOnInit() {
+        this.buildForm();
+    }
+
+    buildForm() {
+        this.form = this.fb.group({
+            givenName: ['', Validators.required],
             sn: ['', Validators.required],
             mail: ['', Validators.required],
             uid: ['', Validators.required]
-        })
+        });
+
+        // Dynamically generate our validation messages
+        this.form.valueChanges.subscribe( data => this.onValueChanged(data));
+        // Grab the first letter of the first name for username
+        this.form.get('givenName').valueChanges.subscribe( data => {
+            if ( data ) {
+                const uid = this.form.get('uid').value;
+                this.form.patchValue({ uid: data.substring(0, 1).toLowerCase() + uid.slice(1, uid.length) });
+            }
+        });
+        // Append the lastname after the first initial for username
+        this.form.get('sn').valueChanges.subscribe( data => {
+            if ( data ) {
+                const uid = this.form.get('uid').value;
+                this.form.patchValue({ uid: uid.slice(0, 1) + data.toLowerCase() });
+            }
+        });
+    }
+
+    /** Generate error messages based on validation */
+    onValueChanged(data?: any) {
+        if (!this.form) { return; }
+        const form = this.form;
+
+        for (const field in this.formErrors) {
+            if ( this.formErrors.hasOwnProperty( field )) {
+                // clear previous error message (if any)
+                this.formErrors[field] = '';
+                const control = form.get(field);
+
+                if (control && control.dirty && !control.valid) {
+                    const messages = this.validationMessages[field];
+                    for (const key in control.errors) {
+                        if ( control.errors.hasOwnProperty( key ) ) {
+                            this.formErrors[field] += messages[key] + ' ';
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -34,7 +105,7 @@ export class CreateComponent implements OnChanges {
      */
     onSubmit() {
         this.userQ.push(this.form.value);
-        this.form.reset();
+        this.buildForm();
     }
 
     /**
@@ -86,24 +157,6 @@ export class CreateComponent implements OnChanges {
             }
         )
     };
-
-    /**
-     * Sets the standard username based on lastname and first initial
-     * example: John Doe -> username: jdoe
-     *
-     * This function doesn't guarantee a unique username. The username is
-     * subsequently checked with the checkUsername function and an error
-     * will be set if it matches an existing user.
-     */
-    ngOnChanges() {
-        console.log('Changes detected')
-        const cn = this.form.get('cn').value || '';
-        const sn = this.form.get('sn').value || '';
-        this.form.patchValue({
-            uid: ( cn.substring( 0, 1 ) + sn ).toLowerCase().replace(/[^a-z0-9]/g, '')
-        });
-        this.checkUsername('');
-    }
 
     /**
      * Validates the queue to ensure users don't share Usernames

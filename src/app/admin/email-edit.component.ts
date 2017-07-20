@@ -4,7 +4,7 @@ import { EmailService } from '../http-services/email.service';
 
 @Component({
   selector: 'app-email-edit',
-  template: ``
+  templateUrl: 'email-edit.component.html'
 })
 export class EmailEditComponent implements OnInit {
     text = '';

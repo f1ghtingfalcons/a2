@@ -1,6 +1,7 @@
 :host {
     position: absolute;
     height: 100%;
+    width: 100%;
 }
 
 .sidenav {
@@ -13,7 +14,7 @@
 
 .admin-panel {
     background-color: rgb(224,224,224);
-    height: 100%;
+    min-height: 100%;
 }
 
 .admin-panel>div{

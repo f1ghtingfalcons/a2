@@ -6,7 +6,7 @@
 .queue-user-fab {
     position: absolute;
     bottom: 190px;
-    right: -44px;
+    right: -52px;
     z-index: 5;
 }
 
@@ -24,7 +24,7 @@
 
 @media only screen and (max-width: 960px) {
     .queue-user-fab {
-        bottom: -44px;
+        bottom: -42px;
         right: 16px;
         transform: rotate(90deg);
     }
@@ -50,7 +50,10 @@
     overflow-y: auto;
 }
 
-.create-user-half {
-    min-width: 50%;
+.padded-block {
     padding: 32px;
+}
+
+.register-buttons {
+    margin-top: 32px;
 }

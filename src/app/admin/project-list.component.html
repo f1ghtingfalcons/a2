@@ -1,0 +1,41 @@
+<md-toolbar style="background-color: #757575">
+    <div class="big-search" fxLayout="row">
+        <md-icon fxFlex="nogrow">search</md-icon>
+        <input fxFlex class="large-search-box" placeholder="Search" [(ngModel)]="search">
+        <button md-icon-button class="right" (click)="search=''">
+            <md-icon>close</md-icon>
+        </button>
+    </div>
+</md-toolbar>
+<md-grid-list cols="2" gutterSize="16" class="project-list">
+    <md-grid-tile class="project-tile" *ngFor="let project of projectList">
+        <form name="form">
+            <md-toolbar>
+                <md-input-container>
+                    <input mdInput name="name" placeholder="Name" [(ngModel)]="project.name" required>
+                </md-input-container>
+                <md-input-container>
+                    <input mdInput name="group" placeholder="Group" [(ngModel)]="project.group" required>
+                </md-input-container>
+            </md-toolbar>
+            <div class="project-area">
+                <span>Controlled Groups (regular expression): </span>
+                <md-input-container>
+                    <input mdInput name="regex" placeholder="Regex" [(ngModel)]="project.regex" ng-change="filterGroups( project )" required>
+                </md-input-container>
+                <span>[{{project.matchNumber}}]</span>
+                <md-list class="project-groups-list">
+                    <md-list-item *ngFor="let group of project.groupList">
+                        {{group.cn}}
+                    </md-list-item>
+                </md-list>
+            </div>
+            <button md-button class="delete-project-button" (click)="deleteProject( project );">
+                <label>Delete Project</label>
+            </button>
+        </form>
+    </md-grid-tile>
+</md-grid-list>
+<button md-fab class="add-project-btn" (click)="newProject()" mdToolTip="Add New Project" mdTooltipDirection="top">
+    <md-icon>add</md-icon>
+</button>

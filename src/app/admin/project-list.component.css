@@ -1,0 +1,67 @@
+.project-search-box {
+    width: 50%;
+    max-width: 960px;
+    min-width: 256px;
+    margin: 16px;
+    float: left;
+}
+
+.project-area {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0px 16px;
+}
+
+.project-groups-list {
+    max-height: 256px;
+    overflow: auto;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+.edit-project-button {
+    position: absolute;
+    top: 20px;
+    right: 16px;
+}
+
+.save-project-button {
+    position: absolute;
+    top: 20px;
+    right: 16px;
+    background-color: rgb(255, 235, 59);
+}
+
+.delete-project-button {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    color: rgb(255,82,82);
+}
+
+.project-list {
+    margin: 16px;
+}
+
+.project-tile {
+    background-color: #fff;
+}
+
+.big-search {
+    width: 90%;
+    max-width: 1280px;
+    margin: 16px auto;
+}
+
+.big-search md-icon {
+    height: 25px;
+}
+
+.add-project-btn {
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+}

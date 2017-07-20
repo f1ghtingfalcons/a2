@@ -1,149 +1,151 @@
-<div class="about" fxLayout="column" fxLayoutAlign="center center">
-    <div class="blurb" fxLayout="column" fxLayoutAlign="center center">
-        <h1>About</h1>
-        <img class="logo" src="assets/images/roleman_logo.svg">
-        <h3 class="center">Roleman</h3>
-        <p>
-            Welcome to the LASP Role Manager aka Roleman. This application makes it easy to create new users in the internal LDAP
-            (WEBIAM) and add them to various roles throughout the lab. Please contact an administrator if you are unsure how to use
-            this application. You can log a ticket with the web support jira project or email the web support group
-            (web.support@lasp.colorado.edu). Changes made here will be reflected in other systems. You will need to be an admin or
-            a project lead in order to change group or user information.
-        </p>
-    </div>
-    <div class="about-card">
-        <h2 class="center">How To</h2>
-        <md-divider></md-divider>
-        <md-tab-group dynamicHeight="true" headerPosition="center">
-            <md-tab label="Create a New User">
-                <h4 class="center">Creating a New LDAP User</h4>
-                <div class="steps">
-                    Creating new users is done on the 'Create' page.
-                    Select the 'Create' page from the nav bar or use this link:
-                    <a href="/create">Create New User</a>
-                </div>
-                <div class="center">
-                    <img src="assets/images/create_highlighted.png">
-                </div>
-                <div class="steps">
-                    Use the input boxes to fill in the following information:
-                    <ul>
-                        <li>First Name</li>
-                        <li>Last Name</li>
-                        <li>Email</li>
-                    </ul>
-                </div>
-                <div class="steps">
-                    A username will be generated automatically based on the user's first and
-                    last name. However, you can change the username to your liking.
-                </div>
-                <div class="center">
-                    <img src="assets/images/create_page_snip1.PNG">
-                </div>
-                <div class="steps">
-                    Clicking the arrow will queue the user to be added to LDAP, but
-                    the new user won't be commited to LDAP until the 'Register Users'
-                    button has been selected.
-                </div>
-                <div class="center">
-                    <img src="assets/images/create_page_snip2.PNG">
-                </div>
-                <div class="steps">
-                    Checking the 'Invite Users Via Email' box will send an invitation
-                    email with links for the user to activate their account.
-                </div>
-            </md-tab>
-            <md-tab label="Add A User To a Group">
-                <h4 class="center">Add a User to a Group</h4>
-                <div class="steps">
-                    You can add users to groups using the Groups page. Select the groups page
-                    with the navbar or use this link:
-                    <a href="/groups">Groups Page</a>
-                </div>
-                <div class="center">
-                    <img src="assets/images/groups_highlighted.png">
-                </div>
-                <div class="steps">
-                    Use the search box to find groups. You can select a group by clicking on it in the list
-                </div>
-                <div class="center">
-                    <img src="assets/images/groups_snip1.PNG">
-                </div>
-                <div class="steps">
-                    Once a group has been selected, it will show its most recent membership. Using the search box
-                    at the top of the page, you can queue new users to be added to the group. Users can also be
-                    removed from a group by clicking the 'x' next to their name.
-                </div>
-                <div class="center">
-                    <img src="assets/images/groups_snip2.PNG">
-                </div>
-                <div class="steps">
-                    To update groups, make sure you click the 'Floppy Disk / Save' icon after making your changes. Groups will be returned
-                    to the list on the left of the page.
-                </div>
-            </md-tab>
-            <md-tab label="Edit A User">
-                <h4 class="center">Edit A User</h4>
-                <div class="steps">
-                    Visiting a user's profile will allow you to change their information.
-                    <a href="/users">Users List</a>
-                </div>
-                <div class="center">
-                    <img src="assets/images/users_highlighted.png">
-                </div>
-                <div class="steps">
-                    The user's information will be displayed on the page. You can change a user's information by typing in the text
-                    boxes. Clicking the 'Save Changes' button will save the changes in LDAP.
-                </div>
-                <div class="center">
-                    <img src="assets/images/user_snip1.PNG">
-                </div>
-                <div class="steps">
-                    A user's profile page can also be used to add a user to a group. Simply search for the group in the text box and click on it. It will
-                    automatically be saved in LDAP.
-                </div>
-                <div class="steps">
-                    A user's account can be locked, unlocked or reset as well. Simply press the corresponding button. When resetting a user account, they will
-                    receive an email with a link to re-activate their account.
-                </div>
-                <div class="center">
-                    <img src="assets/images/user_snip2.PNG">
-                </div>
-                <div class="steps">
-                    The profile page also includes handy information including the last time their password was reset and the associated PWM log. Object classes
-                    are LDAP properties and should be the same between profiles.
-                </div>
-            </md-tab>
-        </md-tab-group>
-    </div>
-    <div class="release-notes">
-        <h2>Release Notes:</h2>
-        <div>
-            <h4>Release 1.1</h4>
-            <h5>New Features</h5>
-            <ul>
-                <li>User actions removed from the users list</li>
-                <li>Added profile pages for each user to view and edit information</li>
-                <li>Improved Splunk logging for user actions</li>
-                <li>Added the ability to send and edit an email when a users account is reset</li>
-                <li>Improved the 'About' page</li>
-                <li>Emails and usernames will now self report if they already exist in LDAP</li>
-            </ul>
-            <h5>Bug Fixes</h5>
-            <ul>
-                <li>Fixed an issue where logging in with a username not matched in LDAP would cause a timeout</li>
-                <li>Fixed an issue where projects would duplicate themselves when deleted</li>
-                <li>Fixed a CSS issue only present on 'Retina' monitors</li>
-            </ul>
-            <h4>Release 1.0</h4>
-            <ul>
-                <li>Initial Release of Roleman for beta testers!</li>
-                <li>Users page: view and edit user profiles</li>
-                <li>Groups Page: Add and Remove users from Groups</li>
-                <li>Tools Page: Use emails to compare group memberships</li>
-                <li>Create Page: Add a new user account to LDAP</li>
-                <li>Admin Panel: Control admin membership, edit site preferences, edit site projects</li>
-            </ul>
+<div class="about" >
+    <div fxLayout="column" fxLayoutAlign="center center">
+        <div class="blurb" fxLayout="column" fxLayoutAlign="center center">
+            <h1>About</h1>
+            <img class="logo" src="assets/images/roleman_logo.svg">
+            <h3 class="center">Roleman</h3>
+            <p>
+                Welcome to the LASP Role Manager aka Roleman. This application makes it easy to create new users in the internal LDAP
+                (WEBIAM) and add them to various roles throughout the lab. Please contact an administrator if you are unsure how to use
+                this application. You can log a ticket with the web support jira project or email the web support group
+                (web.support@lasp.colorado.edu). Changes made here will be reflected in other systems. You will need to be an admin or
+                a project lead in order to change group or user information.
+            </p>
+        </div>
+        <div class="about-card">
+            <h2 class="center">How To</h2>
+            <md-divider></md-divider>
+            <md-tab-group dynamicHeight="true" headerPosition="center">
+                <md-tab label="Create a New User">
+                    <h4 class="center">Creating a New LDAP User</h4>
+                    <div class="steps">
+                        Creating new users is done on the 'Create' page.
+                        Select the 'Create' page from the nav bar or use this link:
+                        <a href="/create">Create New User</a>
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/create_highlighted.png">
+                    </div>
+                    <div class="steps">
+                        Use the input boxes to fill in the following information:
+                        <ul>
+                            <li>First Name</li>
+                            <li>Last Name</li>
+                            <li>Email</li>
+                        </ul>
+                    </div>
+                    <div class="steps">
+                        A username will be generated automatically based on the user's first and
+                        last name. However, you can change the username to your liking.
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/create_page_snip1.PNG">
+                    </div>
+                    <div class="steps">
+                        Clicking the arrow will queue the user to be added to LDAP, but
+                        the new user won't be commited to LDAP until the 'Register Users'
+                        button has been selected.
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/create_page_snip2.PNG">
+                    </div>
+                    <div class="steps">
+                        Checking the 'Invite Users Via Email' box will send an invitation
+                        email with links for the user to activate their account.
+                    </div>
+                </md-tab>
+                <md-tab label="Add A User To a Group">
+                    <h4 class="center">Add a User to a Group</h4>
+                    <div class="steps">
+                        You can add users to groups using the Groups page. Select the groups page
+                        with the navbar or use this link:
+                        <a href="/groups">Groups Page</a>
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/groups_highlighted.png">
+                    </div>
+                    <div class="steps">
+                        Use the search box to find groups. You can select a group by clicking on it in the list
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/groups_snip1.PNG">
+                    </div>
+                    <div class="steps">
+                        Once a group has been selected, it will show its most recent membership. Using the search box
+                        at the top of the page, you can queue new users to be added to the group. Users can also be
+                        removed from a group by clicking the 'x' next to their name.
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/groups_snip2.PNG">
+                    </div>
+                    <div class="steps">
+                        To update groups, make sure you click the 'Floppy Disk / Save' icon after making your changes. Groups will be returned
+                        to the list on the left of the page.
+                    </div>
+                </md-tab>
+                <md-tab label="Edit A User">
+                    <h4 class="center">Edit A User</h4>
+                    <div class="steps">
+                        Visiting a user's profile will allow you to change their information.
+                        <a href="/users">Users List</a>
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/users_highlighted.png">
+                    </div>
+                    <div class="steps">
+                        The user's information will be displayed on the page. You can change a user's information by typing in the text
+                        boxes. Clicking the 'Save Changes' button will save the changes in LDAP.
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/user_snip1.PNG">
+                    </div>
+                    <div class="steps">
+                        A user's profile page can also be used to add a user to a group. Simply search for the group in the text box and click on it. It will
+                        automatically be saved in LDAP.
+                    </div>
+                    <div class="steps">
+                        A user's account can be locked, unlocked or reset as well. Simply press the corresponding button. When resetting a user account, they will
+                        receive an email with a link to re-activate their account.
+                    </div>
+                    <div class="center">
+                        <img src="assets/images/user_snip2.PNG">
+                    </div>
+                    <div class="steps">
+                        The profile page also includes handy information including the last time their password was reset and the associated PWM log. Object classes
+                        are LDAP properties and should be the same between profiles.
+                    </div>
+                </md-tab>
+            </md-tab-group>
+        </div>
+        <div class="release-notes">
+            <h2>Release Notes:</h2>
+            <div>
+                <h4>Release 1.1</h4>
+                <h5>New Features</h5>
+                <ul>
+                    <li>User actions removed from the users list</li>
+                    <li>Added profile pages for each user to view and edit information</li>
+                    <li>Improved Splunk logging for user actions</li>
+                    <li>Added the ability to send and edit an email when a users account is reset</li>
+                    <li>Improved the 'About' page</li>
+                    <li>Emails and usernames will now self report if they already exist in LDAP</li>
+                </ul>
+                <h5>Bug Fixes</h5>
+                <ul>
+                    <li>Fixed an issue where logging in with a username not matched in LDAP would cause a timeout</li>
+                    <li>Fixed an issue where projects would duplicate themselves when deleted</li>
+                    <li>Fixed a CSS issue only present on 'Retina' monitors</li>
+                </ul>
+                <h4>Release 1.0</h4>
+                <ul>
+                    <li>Initial Release of Roleman for beta testers!</li>
+                    <li>Users page: view and edit user profiles</li>
+                    <li>Groups Page: Add and Remove users from Groups</li>
+                    <li>Tools Page: Use emails to compare group memberships</li>
+                    <li>Create Page: Add a new user account to LDAP</li>
+                    <li>Admin Panel: Control admin membership, edit site preferences, edit site projects</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

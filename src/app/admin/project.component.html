@@ -1,0 +1,56 @@
+<md-toolbar style="background-color: #757575" class="md-whiteframe-2dp">
+    <div class="big-search" layout="row">
+        <md-icon flex="nogrow">search</md-icon>
+        <input flex class="large-search-box" placeholder="Search" ng-model="projectSearch.object.name">
+        <md-button class="md-icon-button right" ng-click="projectSearch=''">
+            <md-icon>close</md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-grid-list class="project-list" md-cols-xs="1" md-cols-sm="1" md-cols-gt-sm="2" md-row-height="500px" md-gutter="12px">
+    <md-grid-tile class="project-tile md-whiteframe-1dp" ng-repeat="project in $ctrl.projectList | filter: projectSearch" md-rowspan="1" md-colspan="1">
+        <form name="form">
+            <md-grid-tile-header style="height: 80px;">
+                <md-input-container>
+                    <label>Name</label>
+                    <input name="name" ng-model="project.object.name" required>
+                    <div ng-messages="form.name.$error">
+                        <div ng-message="required">Name is required.</div>
+                    </div>
+                </md-input-container>
+                <md-input-container>
+                    <label>Group</label>
+                    <input name="group" ng-model="project.object.group" required>
+                    <div ng-messages="form.group.$error">
+                        <div ng-message="required">Group is required.</div>
+                    </div>
+                </md-input-container>
+                <md-button class="save-project-button md-icon-button" ng-disabled="form.$invalid || $ctrl.notChanged()" ng-click="$ctrl.saveProject( project );">
+                    <md-icon>save</md-icon>
+                </md-button>
+            </md-grid-tile-header>
+            <div class="project-area">
+                <span>Controlled Groups (regular expression): </span>
+                <md-input-container>
+                    <input name="regex" ng-model="project.object.regex" ng-change="$ctrl.filterGroups( project )" required aria-label="Regular Expression">
+                    <div ng-messages="form.regex.$error">
+                        <div ng-message="required">A regular expression is required.</div>
+                    </div>
+                </md-input-container>
+                <span>[{{project.matchNumber}}]</span>
+                <md-list class="project-groups-list">
+                    <md-list-item ng-repeat="group in project.groupList">
+                        {{group.cn}}
+                    </md-list-item>
+                </md-list>
+            </div>
+            <md-button class="delete-project-button" ng-click="$ctrl.deleteProject( project );">
+                <label>Delete Project</label>
+            </md-button>
+        </form>
+    </md-grid-tile>
+</md-grid-list>
+<md-button class="md-fab add-project-btn" ng-click="$ctrl.newProject()">
+    <md-icon>add</md-icon>
+    <md-tooltip md-direction="top">Add new project</md-tooltip>
+</md-button>
