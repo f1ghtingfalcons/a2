@@ -6,6 +6,7 @@ import { AboutComponent } from './about/about.component';
 import { GroupsComponent } from './groups/groups.component';
 import { AdminComponent } from './admin/admin.component';
 import { ToolsComponent } from './tools/tools.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
     { path: '', redirectTo: '/users', pathMatch: 'full' },
@@ -14,7 +15,8 @@ const routes: Routes = [
     { path: 'tools',  component: ToolsComponent },
     { path: 'about',  component: AboutComponent },
     { path: 'admin',  component: AdminComponent },
-    { path: 'create',  component: CreateComponent }
+    { path: 'create',  component: CreateComponent },
+    { path: 'profile/:uid', component: ProfileComponent }
 ];
 @NgModule({
     imports: [ RouterModule.forRoot(routes) ],

@@ -13,22 +13,25 @@
             <md-divider></md-divider>
             <md-progress-bar *ngIf="loadingUsers" color="accent" mode="indeterminate"></md-progress-bar>
             <h3 md-subheader>Click on a user to see or edit their profile (editing requires special permissions).</h3>
-            <md-list-item disableRipple *ngFor="let user of users | SearchUsers: searchText | paginate: { itemsPerPage: 15, currentPage: p }">
+            <md-list-item disableRipple *ngFor="let user of users
+                                                | SearchUsers: searchText
+                                                | paginate: { itemsPerPage: 15, currentPage: p }"
+                                                (click)="gotoUserProfile(user)">
                 <div fxFlex="30" fxFlex.xs="50">
                     <md-icon>person</md-icon>
                     {{user.cn}}
                 </div>
                 <div fxFlex="30" fxHide.xs class="email-field">{{user.mail}}</div>
-                <div class="column" fxFlex="30" fxFlex.xs="50">
+                <div class="column" fxFlex="30" fxFlex.xs="50" appStopClick>
                     <ul class="group-list">
                         <li *ngFor="let group of user.groups">
                             {{group}}
-                            <button md-icon-button (click)="removeFromGroup(user,group)">
+                            <button md-icon-button [disabled]="preventUpdates" (click)="removeFromGroup(user,group)">
                                 <md-icon color="warn">close</md-icon>
                             </button>
                         </li>
-                        <li *ngIf="!loadingGroups">
-                            <app-autocomplete [list]="groups"></app-autocomplete>
+                        <li *ngIf="!loadingGroups && !preventUpdates">
+                            <app-autocomplete [list]="groups" (textChange)="addToGroup(user,$event)"></app-autocomplete>
                         </li>
                     </ul>
                 </div>

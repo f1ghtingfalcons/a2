@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, AfterViewInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import {MdAutocompleteTrigger} from '@angular/material';
+import {MdAutocompleteTrigger, MdOptionSelectionChange} from '@angular/material';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -15,7 +15,7 @@ import 'rxjs/add/operator/map';
         </button>
     </md-input-container>
     <md-autocomplete flex #auto="mdAutocomplete">
-        <md-option *ngFor="let option of filteredList | async" [value]="option.cn">
+        <md-option *ngFor="let option of filteredList | async" [value]="option.cn" (onSelectionChange)="onSelect(option.cn)">
             {{ option.cn }}
         </md-option>
     </md-autocomplete>
@@ -33,7 +33,7 @@ import 'rxjs/add/operator/map';
         ])
     ]
 })
-export class AutocompleteComponent implements OnInit, AfterViewInit {
+export class AutocompleteComponent implements OnInit {
     @Input() list: any[];
     @Input() searchField = 'cn'; // default to LDAP common name
     @Input() placeholder = 'Add Group';
@@ -42,9 +42,9 @@ export class AutocompleteComponent implements OnInit, AfterViewInit {
     filteredList: Observable<any>;
     formControl = new FormControl();
     @Output() textChange = new EventEmitter<string>();
-    @ViewChild(MdAutocompleteTrigger) trigger: MdAutocompleteTrigger;
 
     ngOnInit() {
+        this.formControl = new FormControl();
         this.filteredList = this.formControl.valueChanges
                  .map( search => {
                      if ( search && search !== '' ) {
@@ -56,11 +56,9 @@ export class AutocompleteComponent implements OnInit, AfterViewInit {
                  });
     }
 
-    ngAfterViewInit() {
-        this.trigger.optionSelections.subscribe(option => {
-            console.log('hello world')
-            console.log(option);
-        });
+    onSelect( name: string ) {
+        this.textChange.emit( name );
+        this.formControl.reset();
     }
 
     filterList( val: string ) {

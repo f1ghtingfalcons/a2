@@ -17,7 +17,6 @@ const loggedInAccess: PagePermissions = new PagePermissions( true, false );
 
 /** Dynamic Navigation Bar Component */
 export class NavigationComponent {
-    router: Router;
     menuOpen = false;
     pages: Page[] = [
         new Page( 'Users', 'users', freeAccess ),
@@ -28,9 +27,7 @@ export class NavigationComponent {
     ];
 
 
-    constructor( private _router: Router, public loginDialog: MdDialog, private auth: AuthService ) {
-        this.router = _router;
-    }
+    constructor( private router: Router, public loginDialog: MdDialog, private auth: AuthService ) {}
 
     /**
      * Returns whether or not a link points to the current page
@@ -64,8 +61,14 @@ export class NavigationComponent {
         this.menuOpen = !this.menuOpen;
     }
 
+    gotoProfilePage() {
+        if ( this.auth.loggedInUser ) {
+            this.router.navigateByUrl('profile/' + this.auth.loggedInUser);
+        }
+    }
+
     gotoAdminPage() {
-        this._router.navigate(['/admin']);
+        this.router.navigate(['/admin']);
     }
 }
 

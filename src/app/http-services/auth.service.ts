@@ -23,6 +23,8 @@ export class AuthService {
     loggedInUser$ = new BehaviorSubject<string>(this.loggedInUser);
     loggedInAdmin: boolean;
     loggedInAdmin$ = new BehaviorSubject<boolean>(this.loggedInAdmin);
+    loggedInRegex: string[];
+    loggedInRegex$ = new BehaviorSubject<string[]>(this.loggedInRegex);
     jwt: JwtHelper = new JwtHelper();
 
     constructor(private router: Router, private http: Http, private usersService: UsersService ) {
@@ -40,6 +42,8 @@ export class AuthService {
             this.loggedInUser = token.username;
             this.loggedInAdmin$.next(token.isAdmin);
             this.loggedInAdmin = token.isAdmin;
+            this.loggedInRegex$.next(token.userRegex);
+            this.loggedInRegex = token.userRegex;
         }
         this.loggedIn$.next(value);
         this.loggedIn = value;

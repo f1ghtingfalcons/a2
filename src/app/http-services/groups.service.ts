@@ -28,7 +28,6 @@ export class GroupsService {
      */
     updateGroup = function( group: string, update: LdapChange ) {
         return this.authHttp.put( LdapURL + 'api/v1/editor/groups/' + group, update )
-                        .map( res => res.json() )
                         .catch(handleError);
     };
 

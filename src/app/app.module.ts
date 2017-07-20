@@ -17,6 +17,7 @@ import { CreateComponent } from './create/create.component'
 import { AboutComponent } from './about/about.component';
 import { GroupsComponent } from './groups/groups.component';
 import { ToolsComponent } from './tools/tools.component';
+import { ProfileComponent } from './profile/profile.component';
 import { NavigationComponent, LoginDialogComponent } from './navigation/navigation.component';
 import * as adminPage from './admin/index';
 import * as httpService from './http-services/index';
@@ -37,6 +38,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         AboutComponent,
         GroupsComponent,
         ToolsComponent,
+        ProfileComponent,
         adminPage.AdminComponent,
         adminPage.AdminsControlComponent,
         adminPage.LogComponent,
@@ -49,7 +51,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         shared.SearchBoxComponent,
         shared.SearchUsersPipe,
         shared.SearchGroupsPipe,
-        shared.SearchTextPipe
+        shared.SearchTextPipe,
+        shared.ClickStopDirective
     ],
     imports: [
         BrowserModule,

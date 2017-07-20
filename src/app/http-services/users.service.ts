@@ -22,31 +22,46 @@ const restrictedUserList: string[] = [
 @Injectable()
 export class UsersService {
 
-    constructor (private http: Http, private authHttp: AuthHttp ) {}
+    constructor ( private http: Http, private authHttp: AuthHttp ) {}
 
     /**
      * returns an array of group names. In LDAP if a user only belongs to one
      * group, the memberOf property will only be a string so we convert it to
      * a single object array instead.
      */
-    private normalizeGroups( groups ) {
-        let normalizedGroups = [];
-        if ( Array.isArray( groups ) ) {
-            normalizedGroups = groups.map( function( group ) {
-                /**
-                 * Groups are represented by their dns in user objects.
-                 * To get a 'pretty' display name we take only the cn of the
-                 * group object and throw away any domain or object information
-                 *
-                 * before -> "cn=lovejoy-wiki-users,ou=groups,dc=lasp,dc=colorado,dc=edu"
-                 * after -> "lovejoy-wiki-users"
-                 */
-                return group.split( ',' )[0].substring( 3 );
-            });
-        } else if ( typeof groups === 'string' ) {
-            normalizedGroups = [ groups.split( ',' )[0].substring( 3 ) ];
+    private _normalizeGroups( groups ) {
+        let normalizedGroups;
+        switch ( typeof groups ) {
+            case 'object': {
+                normalizedGroups = groups.map( group => this._extractCN( group ));
+                break;
+            }
+            case 'string': {
+                normalizedGroups = [ this._extractCN( groups ) ];
+                break;
+            }
+            default: {
+                normalizedGroups = [];
+            }
         }
         return normalizedGroups;
+    }
+
+    /**
+     * Groups are represented by their dns in user objects.
+     * To get a 'pretty' display name we take only the cn of the
+     * group object and throw away any domain or object information
+     *
+     * before -> "cn=lovejoy-wiki-users,ou=groups,dc=lasp,dc=colorado,dc=edu"
+     * after -> "lovejoy-wiki-users"
+     */
+    private _extractCN( groupName: string ) {
+        return groupName.split( ',' )[0].substring( 3 );
+    }
+
+    /** Return the restricted user list, hardcoded for now */
+    getRestrictedUserList() {
+        return restrictedUserList;
     }
 
     /**
@@ -54,14 +69,10 @@ export class UsersService {
      */
     getAllUsers = function() {
         return this.http.get( LdapURL + 'api/v1/users' )
-                        .map(res => res.json())
+                        .map( res => res.json())
                         .map( users => {
-                            users.forEach( user => {
-                                user.groups = this.normalizeGroups( user.memberOf );
-                            })
-                            return users.filter( user => {
-                                return restrictedUserList.indexOf( user.dn ) < 0;
-                            });
+                            users.forEach( user => user.groups = this._normalizeGroups( user.memberOf ))
+                            return users.filter( user => restrictedUserList.indexOf( user.dn ) < 0 );
                         })
                         .catch(this.handleError)
     }
@@ -71,9 +82,10 @@ export class UsersService {
      */
     getById = function( username: string ) {
         return this.http.get( LdapURL + 'api/v1/users/' + username )
-                        .map(res => res.json())
+                        .map( res => res.json())
                         .map( user => {
-                            user.groups = this.normalizedGroups( user.memberOf );
+                            user.groups = this._normalizeGroups( user.memberOf );
+                            return user;
                         })
                         .catch(this.handleError);
     };
@@ -83,9 +95,10 @@ export class UsersService {
      */
     getByEmail = function( email: string ) {
         return this.http.get( LdapURL + 'api/v1/users/email/' + email )
-                        .map(res => res.json())
+                        .map( res => res.json())
                         .map( user => {
-                            user.groups = this.normalizedGroups( user.memberOf );
+                            user.groups = this._normalizeGroups( user.memberOf );
+                            return user;
                         })
                         .catch(this.handleError);
     };
@@ -95,8 +108,7 @@ export class UsersService {
      */
     createUser = function( user: User ) {
         return this.authHttp.post( LdapURL + 'api/v1/admin/users/', user )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 
     /**
@@ -104,8 +116,7 @@ export class UsersService {
      */
     updateUser = function( user, update ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 
     /**
@@ -113,8 +124,7 @@ export class UsersService {
      */
     deleteUser = function( username ) {
         return this.authHttp.delete( LdapURL + 'api/v1/admin/users/' + username )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 
     /**
@@ -122,8 +132,7 @@ export class UsersService {
      */
     lockUser = function( username ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/lock' + username )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 
     /**
@@ -131,8 +140,7 @@ export class UsersService {
      */
     unlockUser = function( username ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/unlock' + username )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 
     /**
@@ -140,7 +148,6 @@ export class UsersService {
      */
     resetUser = function( username ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/reset' + username )
-                        .map(res => res.json())
-                        .catch(this.handleError);
+                            .catch(this.handleError);
     };
 }

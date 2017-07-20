@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { User, Group } from './ldap.model';
 
-@Pipe({name: 'SearchUsers'})
+@Pipe({name: 'SearchUsers', pure: false})
 export class SearchUsersPipe implements PipeTransform {
     transform( haystack: User[], input ) {
         const returnList = [];

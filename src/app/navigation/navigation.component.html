@@ -13,7 +13,7 @@
             </a>
             <div class="spacer"></div>
             <button md-button *ngIf="!auth.loggedIn" (click)="showLogin()">LOGIN</button>
-            <a md-button class="nav-item" *ngIf="auth.loggedIn">
+            <a md-button class="nav-item" *ngIf="auth.loggedIn" (click)="gotoProfilePage()">
                 {{auth.loggedInUser}}
             </a>
             <button *ngIf="auth.loggedIn" md-icon-button [mdMenuTriggerFor]="menu">

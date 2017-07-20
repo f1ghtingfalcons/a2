@@ -1,0 +1,26 @@
+:host {
+    padding: 32px;
+}
+
+.groups-update-btn {
+    position: fixed;
+    right: 16px;
+    bottom: 64px;
+}
+
+.chips-btn {
+    height: 1.5em;
+    width: 1.5em;
+    line-height: 1.5em;
+}
+
+.chips-btn md-icon {
+    font-size: inherit;
+    width: 1em;
+    height: 1em;
+    vertical-align: baseline;
+}
+
+.chips-btn .mat-icon-button {
+    line-height: 1.5em;
+}

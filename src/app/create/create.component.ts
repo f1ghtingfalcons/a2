@@ -1,6 +1,6 @@
 import { Component, Inject, OnChanges } from '@angular/core';
 import { UsersService } from '../http-services/users.service';
-import { User, Group, userSort, ActivityLogService } from '../shared/index';
+import { User, Group, ldapSort, ActivityLogService } from '../shared/index';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({

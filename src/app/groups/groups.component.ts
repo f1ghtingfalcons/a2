@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService, GroupsService, AuthService } from '../http-services/index';
 import { ActivityLogService } from '../shared/activity-log.service';
-import { User, Group, LdapChange } from '../shared/ldap.model';
+import { User, Group, LdapChange, ldapSort } from '../shared/index';
 
 @Component({
   selector: 'app-groups',
@@ -9,9 +9,9 @@ import { User, Group, LdapChange } from '../shared/ldap.model';
   styleUrls: ['./groups.component.css']
 })
 export class GroupsComponent implements OnInit {
-    pageSize = 10;
     dirty = false;
     loadingGroups = true;
+    showUsers = true;
     searchEmployeeText = '';
     searchGroupText = '';
     selectedEmployees = [];
@@ -19,39 +19,28 @@ export class GroupsComponent implements OnInit {
     users = [];
     groups = [];
     lookupList = [];
-    userRegex: string[] = [];
+    userRegex: RegExp[] = [];
 
     constructor( private usersService: UsersService,
                  private groupsService: GroupsService,
                  private activityLog: ActivityLogService,
-                 private auth: AuthService ) {}
+                 private auth: AuthService ) {
+                    this.userRegex = Boolean(this.auth.loggedInRegex) ?
+                    this.auth.loggedInRegex
+                    .filter( function( regex ) {
+                        // filter null, 0, '', undefined values
+                        return Boolean(regex);
+                    })
+                    // create regex javascript objects
+                    .map( function( regex ) {
+                        return new RegExp( regex, 'ig' );
+                    }) : [];
+                 }
 
     ngOnInit() {
         this.loadEmployeeList();
         this.loadGroupList();
     }
-    /*
-    * Here we cache the session info locally. Normally this would be a bad idea since
-    * if the session info changes on the server or the user logs out this would not be
-    * caught by this code. However, a logout request by the user will always redirect to
-    * the main page and changes to the session info on the server will be dealt with whenever
-    * a server request is made.
-    */
-    /*
-    sessionInfo = AuthenticationService.GetCachedSessionInfo();
-    userRegex = Boolean(sessionInfo.userRegex) ?
-        sessionInfo.userRegex
-        .filter( function( regex ) {
-            // filter null, 0, '', undefined values
-            return Boolean(regex);
-        })
-        // create regex javascript objects
-        .map( function( regex ) {
-            return new RegExp( regex, 'ig' );
-        }) : [];
-    loadEmployeeList();
-    loadGroupList();
-    */
 
     /**
      * Loads a list of all LDAP users.
@@ -60,7 +49,7 @@ export class GroupsComponent implements OnInit {
         this.usersService.getAllUsers().subscribe(
             users => {
                 this.users = users;
-                this.lookupList = users;
+                this.lookupList = users.slice();
             },
             error => this.activityLog.error('Error retrieving users.<br /><br />' + error)
         )
@@ -86,7 +75,7 @@ export class GroupsComponent implements OnInit {
                         });
                     });
                 }
-                this.groups = groups;
+                this.groups = groups.sort( ldapSort );
             },
             error => this.activityLog.error('Error retrieving groups.<br /><br />' + error),
             () => this.loadingGroups = false
@@ -98,6 +87,7 @@ export class GroupsComponent implements OnInit {
      * http requests are batched by group name and add/remove type.
      */
     mapRoles() {
+        const vm = this;
         // Add each selected employee to each selected group
         const userDns = this.selectedEmployees.map( user => user.dn );
         let requestsProcessed = 0;
@@ -111,7 +101,10 @@ export class GroupsComponent implements OnInit {
                 this.groupsService.updateGroup( group.cn, change ).subscribe(
                     () => this.activityLog.log('Group :' + group.cn + ' updated successfully'),
                     error => this.activityLog.error( error ),
-                    checkIfFinished()
+                    () => {
+                        requestsProcessed++;
+                        checkIfFinished();
+                    }
                 );
             }
             const dnsToRemove = group.usersToRemove.map( user => user.dn );
@@ -121,7 +114,10 @@ export class GroupsComponent implements OnInit {
                 this.groupsService.updateGroup( group.cn, change ).subscribe(
                     () => this.activityLog.log('Group :' + group.cn + ' updated successfully'),
                     error => this.activityLog.error( error ),
-                    () => checkIfFinished()
+                    () => {
+                        requestsProcessed++;
+                        checkIfFinished();
+                    }
                 );
             }
 
@@ -129,16 +125,14 @@ export class GroupsComponent implements OnInit {
             function checkIfFinished() {
                 requestsProcessed++;
                 if ( requestsProcessed === requestsToProcess ) {
-                    this.loadGroupList();
+                    vm.loadGroupList();
                 }
             }
         });
 
         this.selectedEmployees = [];
         this.users = this.lookupList;
-        while ( this.selectedGroups.length > 0 ) {
-            this.removeGroup( 0 );
-        }
+        this.selectedGroups = [];
     }
 
     /**
@@ -148,13 +142,16 @@ export class GroupsComponent implements OnInit {
      * This could potentially be confusing since you can add a user to this list and
      * nothing might change on the UI if they are already members of every group in the list.
      */
-    addEmployee( name ) {
+    addEmployee( name: String ) {
         this.dirty = true;
-        const actualIndex = this.users.indexOf( name );
-        if ( actualIndex < 0 ) {
-            return;
-        }
-        this.selectedEmployees.push( this.users[actualIndex] );
+        let actualIndex: number;
+        const user = this.users.find( ( usr, index ) => {
+            if ( name === usr.cn ) {
+                actualIndex = index;
+                return true;
+            }
+        });
+        this.selectedEmployees.push( user );
         this.users.splice( actualIndex, 1 );
     }
 
@@ -162,15 +159,23 @@ export class GroupsComponent implements OnInit {
      * Remove a user from the new user group add list
      */
     removeEmployee( employee ) {
-        this.users.push( employee );
+        const index = this.selectedEmployees.findIndex( emp => emp.cn === employee.cn );
+        if ( index >= 0 ) {
+            this.selectedEmployees.splice(index, 1).slice();
+            this.users.push( employee );
+        }
     }
 
     /**
      * Queue a user to be removed from a group
      */
     addToRemoveList( group, user ) {
-        this.dirty = true;
-        group.usersToRemove.push(user);
+        const index = group.users.findIndex( usr => usr.cn === user.cn );
+        if ( index >= 0 ) {
+            group.users.splice(index, 1).slice();
+            group.usersToRemove.push(user);
+            this.dirty = true;
+        }
     }
 
     /**
@@ -179,22 +184,12 @@ export class GroupsComponent implements OnInit {
      */
     findEmployee( employee ) {
         const list = this.lookupList;
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].dn.toLowerCase() === employee.toLowerCase()) {
-                return {
-                    cn: list[i].cn,
-                    dn: employee,
-                    uid: list[i].uid,
-                    existing: true
-                };
-            }
+        const user = this.lookupList.find( usr => usr.dn.toLowerCase() === employee.toLowerCase() );
+        if ( user ) {
+            return { cn: user.cn, dn: employee, uid: user.uid, existing: true };
+        } else {
+            return { cn: 'Not Found', dn: null, uid: employee, existing: true };
         }
-        return {
-            cn: 'Not Found',
-            dn: null,
-            uid: employee,
-            existing: true
-        };
     }
 
     /**
@@ -210,7 +205,7 @@ export class GroupsComponent implements OnInit {
         this.selectedGroups.push( group );
         // use the user dns to lookup names and uids
         group.users = [];
-        const restrictedUserList = [] // this.usersService.getRestrictedUserList();
+        const restrictedUserList = this.usersService.getRestrictedUserList();
         group.uniqueMember.forEach( member => {
             // don't add LDAP control users, this is a hardcoded list for now
             if ( restrictedUserList.indexOf( member ) < 0 ) {
@@ -218,10 +213,8 @@ export class GroupsComponent implements OnInit {
             }
         });
         group.usersToRemove = [];
-        // group.users = $filter( 'orderBy' )( group.users, 'cn' );
+        group.users = group.users.sort( ldapSort );
         this.groups.splice( actualIndex, 1 );
-        // this.selectedGroup = null;
-        // this.searchGroupText = '';
     }
 
     /**
@@ -230,7 +223,7 @@ export class GroupsComponent implements OnInit {
      */
     removeGroup( index ) {
         this.groups.push( this.selectedGroups[index] );
-        // vm.groupList = $filter( 'orderBy' )( vm.groupList, 'cn' );
+        this.groups = this.groups.sort( ldapSort );
         this.selectedGroups.splice( index, 1 );
         if ( this.selectedGroups.length === 0 ) {
             this.dirty = false;
