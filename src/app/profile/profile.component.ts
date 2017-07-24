@@ -126,7 +126,7 @@ export class ProfileComponent implements OnInit {
         const r = confirm('Remove ' + user.cn + ' from ' + group + '?');
         if ( r ) {
             const change = new LdapChange('delete', { uniqueMember: user.dn });
-            this.groupsService.updateGroup( group.cn, change).subscrive(
+            this.groupsService.updateGroup( group.cn, change).subscribe(
                 () => this.activityLog.log('User sucessfully removed from group: ' + group.cn),
                 error => this.activityLog.error('Failed to remove user from group: ' + error),
                 () => this.getUser()

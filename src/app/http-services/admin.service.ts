@@ -17,7 +17,7 @@ export class AdminService {
     /**
      * Query the backend for a list of all admin users
      */
-    getAllAdmins = function() {
+    getAllAdmins() {
         return this.authHttp.get( LdapURL + 'api/v1/admin/admins' )
                             .map( res => res.json())
                             .catch(handleError);
@@ -26,7 +26,7 @@ export class AdminService {
     /**
      * Query the backend for an admin account searching by user id
      */
-    getById = function( username ) {
+    getById( username ) {
         return this.authHttp.get( LdapURL + 'api/v1/admin/admins/' + username )
                             .map( res => res.json())
                             .catch(handleError);
@@ -35,7 +35,7 @@ export class AdminService {
     /**
      * Add a new user to the admin account list
      */
-    createAdmin = function( user ) {
+    createAdmin( user ) {
         return this.authHttp.post( LdapURL + 'api/v1/admin/admins', user )
                             .map( res => res.json())
                             .catch(handleError);
@@ -44,7 +44,7 @@ export class AdminService {
     /**
      * Delete a user from the admin account list
      */
-    deleteAdmin = function( username ) {
+    deleteAdmin( username ) {
         return this.authHttp.delete( LdapURL + 'api/v1/admin/admins/' + username )
                             .map( res => res.json())
                             .catch(handleError);

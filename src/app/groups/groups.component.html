@@ -12,7 +12,7 @@
                 <md-card fxFlex fxLayout="row">
                     {{group.cn}}
                     <span fxFlex></span>
-                    <button md-icon-button (click)="addGroup(group)" mdTooltip="Select">
+                    <button md-icon-button (click)="addGroup(group)" mdTooltip="Select" [disabled]="loadingUsers">
                         <md-icon>add</md-icon>
                     </button>
                 </md-card>

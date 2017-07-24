@@ -9,8 +9,8 @@ import { User, Group, ActivityLogService } from '../shared/index';
 })
 export class AdminComponent implements OnInit {
     projectList = [];
-    users: User;
-    groups: Group;
+    users: User[];
+    groups: Group[];
 
     constructor( private usersService: UsersService, private groupsService: GroupsService, private activityLog: ActivityLogService ) {}
 

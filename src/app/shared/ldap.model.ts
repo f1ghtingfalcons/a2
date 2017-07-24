@@ -10,6 +10,7 @@ export class User {
     nsAccountLock = 'true';
     groups: string[];
     invite: boolean;
+    pwmEventLog: string;
 
     constructor(
         public uid: string,

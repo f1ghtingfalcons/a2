@@ -16,16 +16,16 @@ export class EmailService {
     /**
      * Query the backend for the user invite email contents
      */
-    getEmail = function() {
+    getEmail(): Observable<string> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/email' )
-                            .map( res => res.json())
+                            .map( res => res.json().data as string)
                             .catch(handleError);
     };
 
     /**
      * Put new text into the user invite email
      */
-    updateEmail = function( update ) {
+    updateEmail( update ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/email', { updateText: update })
                             .map( res => res.json())
                             .catch(handleError);
@@ -34,9 +34,9 @@ export class EmailService {
     /**
      * Query the backend for the user reset email contents
      */
-    getResetEmail = function() {
+    getResetEmail(): Observable<string> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/resetEmail' )
-                            .map( res => res.json())
+                            .map( res => res.json().data as string)
                             .catch(handleError);
     };
 

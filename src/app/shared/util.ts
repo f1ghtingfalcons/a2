@@ -2,7 +2,7 @@ import { User, Group } from './ldap.model';
 import {Directive, HostListener} from '@angular/core';
 
 /** function to sort users based on their name */
-export function ldapSort(a: User | Group, b: User | Group) {
+export function ldapSort(a: any, b: any) {
     const textA = a.cn.toUpperCase();
     const textB = b.cn.toUpperCase();
     return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;

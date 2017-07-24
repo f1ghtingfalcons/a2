@@ -13,21 +13,17 @@ export class LogService {
 
     constructor (private http: Http, private authHttp: AuthHttp ) {}
 
-    /**
-     * Query the backend for a list of all site logs
-     */
-    getLogList = function() {
+    /** Query the backend for a list of all site logs */
+    getLogList(): Observable<string[]> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/logs' )
                             .map(res => res.json())
-                            .catch(this.handleError);
+                            .catch(handleError);
     };
 
-    /**
-     * Get the contents of a specific site log
-     */
-    getLogContents = function( logName ) {
+    /** Get the contents of a specific site log */
+    getLogContents( logName ): Observable<string[]> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/logs/' + logName )
                             .map(res => res.json())
-                            .catch(this.handleError);
+                            .catch(handleError);
     };
 }

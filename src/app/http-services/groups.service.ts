@@ -14,55 +14,47 @@ export class GroupsService {
 
     constructor (private http: Http, private authHttp: AuthHttp ) {}
 
-    /**
-     * Returns a list of all LDAP groups
-     */
-    getAllGroups = function() {
+    /** Returns a list of all LDAP groups */
+    getAllGroups(): Observable<Group[]> {
         return this.http.get( LdapURL + 'api/v1/groups' )
-                        .map(res => res.json())
+                        .map( res => res.json() as Group[])
                         .catch(handleError);
     }
 
-    /**
-     * Method to request an update to a LDAP group
-     */
-    updateGroup = function( group: string, update: LdapChange ) {
+    /** Return a group searching by id */
+    getById( id: string ): Observable<Group> {
+        return this.http.get( LdapURL + 'api/v1/groups/' + id )
+                        .map( res => res.json() as Group)
+                        .catch(handleError);
+    }
+
+    /** Method to request an update to a LDAP group */
+    updateGroup( group: string, update: LdapChange ) {
         return this.authHttp.put( LdapURL + 'api/v1/editor/groups/' + group, update )
                         .catch(handleError);
     };
 
-    /**
-     * Method to determine if a user is in a group or not
-     */
-    userInGroup = function( group: string, user: User ) {
-        return user.groups.some( function( grp ) {
-            return grp === group;
-        });
+    /** Method to determine if a user is in a group or not */
+    userInGroup( group: string, user: User ) {
+        return user.groups.some( grp => grp === group );
     };
 
-    /**
-     * Add user to LDAP Group
-     */
-    addUserToGroup = function( user: User, group: string ) {
+    /** Add user to LDAP Group */
+    addUserToGroup( user: User, group: string ) {
         // make sure user isn't already in the group
         if ( user.groups && !this.userInGroup( group, user) ) {
-            const modification = new LdapChange( 'add', { uniqueMember: user.dn } );
-            return this.updateGroup( group, modification );
+            return this.updateGroup( group, new LdapChange( 'add', { uniqueMember: user.dn } ));
         } else {
             return Observable.throw(new Error('User is already in the group: ' + group ));
         }
     };
 
-    /**
-     * Remove user from LDAP Group
-     */
-    removeUserFromGroup = function( user: User, group: string ) {
-        const r = confirm('Remove ' + user.displayName + ' from ' + group + '?');
-        if ( r ) {
+    /** Remove user from LDAP Group */
+    removeUserFromGroup( user: User, group: string ) {
+        if ( confirm('Remove ' + user.displayName + ' from ' + group + '?') ) {
             // make sure user is already in the group
             if ( user.groups && this.userInGroup( group, user) ) {
-                const modification = new LdapChange( 'delete', { uniqueMember: user.dn } );
-                return this.updateGroup( group, modification );
+                return this.updateGroup( group, new LdapChange( 'delete', { uniqueMember: user.dn } ));
             } else {
                 return Observable.throw(new Error('User isn\'t in the group: ' + group ));
             }

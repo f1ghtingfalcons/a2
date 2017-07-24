@@ -16,7 +16,7 @@ export class ProjectService {
     /**
          * Query the backend for a list of all projects
          */
-        getAllProjects = function() {
+        getAllProjects() {
             return this.authHttp.get( LdapURL + 'api/v1/admin/projects' )
                        .map( res => res.json())
                        .catch(handleError);
@@ -25,7 +25,7 @@ export class ProjectService {
         /**
          * Return a specific project by id
          */
-        getById = function( id ) {
+        getById( id ) {
             return this.authHttp.get( LdapURL + 'api/v1/admin/projects/' + id )
                                 .map( res => res.json())
                                 .catch(handleError);
@@ -34,7 +34,7 @@ export class ProjectService {
         /**
          * Create a new project
          */
-        createProject = function( project ) {
+        createProject( project ) {
             return this.authHttp.post( LdapURL + 'api/v1/admin/projects', project )
                                 .map( res => res.json())
                                 .catch(handleError);
@@ -43,7 +43,7 @@ export class ProjectService {
         /**
          * Update a project. This will replace the existing properties
          */
-        updateProject = function( id, project ) {
+        updateProject( id, project ) {
             return this.authHttp.put( LdapURL + 'api/v1/admin/projects/' + id, project )
                                 .map( res => res.json())
                                 .catch(handleError);
@@ -52,7 +52,7 @@ export class ProjectService {
         /**
          * Delete a project
          */
-        deleteProject = function( id ) {
+        deleteProject( id ) {
             return this.authHttp.delete( LdapURL + 'api/v1/admin/projects/' + id )
                                 .map( res => res.json())
                                 .catch(handleError);

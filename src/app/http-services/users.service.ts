@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { handleError } from './util';
-import { User, Group } from '../shared/ldap.model';
+import { User, Group, LdapChange } from '../shared/ldap.model';
 import { AuthHttp } from 'angular2-jwt';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
@@ -67,87 +67,87 @@ export class UsersService {
     /**
      * Returns a list of all LDAP users minus restricted accounts
      */
-    getAllUsers = function() {
+    getAllUsers(): Observable<User[]> {
         return this.http.get( LdapURL + 'api/v1/users' )
-                        .map( res => res.json())
+                        .map( res => res.json() as User[])
                         .map( users => {
                             users.forEach( user => user.groups = this._normalizeGroups( user.memberOf ))
                             return users.filter( user => restrictedUserList.indexOf( user.dn ) < 0 );
                         })
-                        .catch(this.handleError)
+                        .catch(handleError)
     }
 
     /**
      * Get a user profile by user id.
      */
-    getById = function( username: string ) {
+    getById( username: string ): Observable<User> {
         return this.http.get( LdapURL + 'api/v1/users/' + username )
-                        .map( res => res.json())
+                        .map( res => res.json() as User)
                         .map( user => {
                             user.groups = this._normalizeGroups( user.memberOf );
                             return user;
                         })
-                        .catch(this.handleError);
+                        .catch(handleError);
     };
 
     /**
      * Get a user profile by email
      */
-    getByEmail = function( email: string ) {
+    getByEmail( email: string ): Observable<User> {
         return this.http.get( LdapURL + 'api/v1/users/email/' + email )
-                        .map( res => res.json())
+                        .map( res => res.json() as User)
                         .map( user => {
                             user.groups = this._normalizeGroups( user.memberOf );
                             return user;
                         })
-                        .catch(this.handleError);
+                        .catch(handleError);
     };
 
     /**
      * Add a new user to LDAP
      */
-    createUser = function( user: User ) {
+    createUser( user: User ) {
         return this.authHttp.post( LdapURL + 'api/v1/admin/users/', user )
-                            .catch(this.handleError);
+                            .catch(handleError);
     };
 
     /**
      * Submit an LDAP update to an existing user
      */
-    updateUser = function( user, update ) {
+    updateUser( user: User, update: LdapChange ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
-                            .catch(this.handleError);
+                            .catch(handleError);
     };
 
     /**
      * Remove a user from LDAP
      */
-    deleteUser = function( username ) {
+    deleteUser( username: string ) {
         return this.authHttp.delete( LdapURL + 'api/v1/admin/users/' + username )
-                            .catch(this.handleError);
+                            .catch(handleError);
     };
 
     /**
      * Lock a user account
      */
-    lockUser = function( username ) {
-        return this.authHttp.put( LdapURL + 'api/v1/admin/users/lock' + username )
-                            .catch(this.handleError);
+    lockUser( username: string ) {
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/lock' + username, {})
+                            .catch(handleError);
     };
 
     /**
      * Unlock a user account
      */
-    unlockUser = function( username ) {
-        return this.authHttp.put( LdapURL + 'api/v1/admin/users/unlock' + username )
-                            .catch(this.handleError);
+    unlockUser( username: string ) {
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/unlock' + username, {})
+                            .catch(handleError);
     };
 
     /**
      * Reset a user account
      */
-    resetUser = function( username ) {
-        return this.authHttp.put( LdapURL + 'api/v1/admin/users/reset' + username )
-                            .catch(this.handleError);
+    resetUser( username: string ) {
+        return this.authHttp.put( LdapURL + 'api/v1/admin/users/reset' + username, {})
+                            .catch(handleError);
     };
 }
