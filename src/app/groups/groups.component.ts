@@ -34,7 +34,7 @@ export class GroupsComponent implements OnInit {
                  private groupsService: GroupsService,
                  private activityLog: ActivityLogService,
                  private auth: AuthService ) {
-                    this.userRegex = Boolean(this.auth.loggedInRegex) ? this.auth.loggedInRegex
+                    this.userRegex = Boolean(this.auth.userRegex) ? this.auth.userRegex
                         .filter( function( regex ) {
                             // filter null, 0, '', undefined values
                             return Boolean(regex);
@@ -77,7 +77,7 @@ export class GroupsComponent implements OnInit {
         this.loadingGroups = true;
         this.groupsService.getAllGroups().subscribe(
             groups => {
-                if ( this.auth.loggedInAdmin ) {
+                if ( this.auth.isAdmin ) {
                     this.groups = groups;
                 } else {
                     this.groups = groups.filter( ( obj ) => {
