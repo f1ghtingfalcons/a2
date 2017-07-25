@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { handleError } from './util';
 import { AuthHttp } from 'angular2-jwt';
@@ -11,19 +10,19 @@ const LdapURL = 'http://localhost:3040/';
 @Injectable()
 export class LogService {
 
-    constructor (private http: Http, private authHttp: AuthHttp ) {}
+    constructor ( private authHttp: AuthHttp ) {}
 
     /** Query the backend for a list of all site logs */
     getLogList(): Observable<string[]> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/logs' )
-                            .map(res => res.json())
+                            .map(res => res.json() as string[] )
                             .catch(handleError);
     };
 
     /** Get the contents of a specific site log */
-    getLogContents( logName ): Observable<string[]> {
+    getLogContents( logName: string ): Observable<string[]> {
         return this.authHttp.get( LdapURL + 'api/v1/admin/logs/' + logName )
-                            .map(res => res.json())
+                            .map(res => res.json() as string[] )
                             .catch(handleError);
     };
 }

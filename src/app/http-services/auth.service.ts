@@ -4,7 +4,6 @@ import { Http, Response } from '@angular/http';
 import { handleError } from './util';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
-import { UsersService } from './users.service';
 
 const LdapURL = 'http://localhost:3040/';
 
@@ -21,29 +20,36 @@ export class AuthService {
     loggedIn$ = new BehaviorSubject<boolean>(this.loggedIn);
     loggedInUser: string;
     loggedInUser$ = new BehaviorSubject<string>(this.loggedInUser);
-    loggedInAdmin: boolean;
-    loggedInAdmin$ = new BehaviorSubject<boolean>(this.loggedInAdmin);
-    loggedInRegex: string[];
-    loggedInRegex$ = new BehaviorSubject<string[]>(this.loggedInRegex);
+    isAdmin: boolean;
+    isAdmin$ = new BehaviorSubject<boolean>(this.isAdmin);
+    userRegex: string[];
+    userRegex$ = new BehaviorSubject<string[]>(this.userRegex);
     jwt: JwtHelper = new JwtHelper();
 
-    constructor(private router: Router, private http: Http, private usersService: UsersService ) {
+    constructor( private router: Router, private http: Http ) {
         // If authenticated, set local profile property and update login status subject
-        if (this.authenticated) {
+        if ( this.authenticated ) {
             this.setLoggedIn(true);
         }
     }
 
-    setLoggedIn(value: boolean) {
+    setLoggedIn( value: boolean ) {
         // Update login status subject
         if ( value ) {
             const token = this.jwt.decodeToken( localStorage.getItem('token') );
             this.loggedInUser$.next(token.username);
             this.loggedInUser = token.username;
-            this.loggedInAdmin$.next(token.isAdmin);
-            this.loggedInAdmin = token.isAdmin;
-            this.loggedInRegex$.next(token.userRegex);
-            this.loggedInRegex = token.userRegex;
+            this.isAdmin$.next(token.isAdmin);
+            this.isAdmin = token.isAdmin;
+            this.userRegex$.next(token.userRegex);
+            this.userRegex = token.userRegex;
+        } else {
+            this.loggedInUser$.next('');
+            this.loggedInUser = '';
+            this.isAdmin$.next(false);
+            this.isAdmin = false;
+            this.userRegex$.next([]);
+            this.userRegex = [];
         }
         this.loggedIn$.next(value);
         this.loggedIn = value;
@@ -59,7 +65,7 @@ export class AuthService {
                    .catch(handleError);
     }
 
-    private _setSession( accessToken ) {
+    private _setSession( accessToken: string ) {
         // Save session data and update login status subject
         localStorage.setItem('token', accessToken);
         this.setLoggedIn(true);

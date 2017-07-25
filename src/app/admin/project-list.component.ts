@@ -1,13 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ProjectService } from '../http-services/project.service';
 import { ActivityLogService } from '../shared/activity-log.service';
-import { User, Group } from '../shared/ldap.model';
-
-class Project {
-    leads: { cn: string, uid: string }[];
-    id: number;
-    constructor( public name: string, public group: string, public regex: string) {}
-}
+import { User, Group, Project } from '../shared/ldap.model';
 
 @Component({
   selector: 'app-projects',

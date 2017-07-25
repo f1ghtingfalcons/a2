@@ -9,7 +9,7 @@ import 'rxjs/add/operator/map';
 
 const LdapURL = 'http://localhost:3040/';
 
-// list of dns restricted from viewing/editing
+/** list of dns restricted from viewing/editing */
 const restrictedUserList: string[] = [
     'uid=syncope,ou=People,dc=lasp,dc=colorado,dc=edu',
     'cn=Directory Manager',
@@ -29,15 +29,15 @@ export class UsersService {
      * group, the memberOf property will only be a string so we convert it to
      * a single object array instead.
      */
-    private _normalizeGroups( groups ) {
+    private _normalizeGroups( groups: string | any[] ) {
         let normalizedGroups;
         switch ( typeof groups ) {
             case 'object': {
-                normalizedGroups = groups.map( group => this._extractCN( group ));
+                normalizedGroups = (groups as any[]).map( group => this._extractCN( group ));
                 break;
             }
             case 'string': {
-                normalizedGroups = [ this._extractCN( groups ) ];
+                normalizedGroups = [ this._extractCN( groups as string ) ];
                 break;
             }
             default: {
@@ -64,9 +64,7 @@ export class UsersService {
         return restrictedUserList;
     }
 
-    /**
-     * Returns a list of all LDAP users minus restricted accounts
-     */
+    /** Returns a list of all LDAP users minus restricted accounts */
     getAllUsers(): Observable<User[]> {
         return this.http.get( LdapURL + 'api/v1/users' )
                         .map( res => res.json() as User[])
@@ -77,9 +75,7 @@ export class UsersService {
                         .catch(handleError)
     }
 
-    /**
-     * Get a user profile by user id.
-     */
+    /** Get a user profile by user id. */
     getById( username: string ): Observable<User> {
         return this.http.get( LdapURL + 'api/v1/users/' + username )
                         .map( res => res.json() as User)
@@ -90,9 +86,7 @@ export class UsersService {
                         .catch(handleError);
     };
 
-    /**
-     * Get a user profile by email
-     */
+    /** Get a user profile by email */
     getByEmail( email: string ): Observable<User> {
         return this.http.get( LdapURL + 'api/v1/users/email/' + email )
                         .map( res => res.json() as User)
@@ -103,51 +97,45 @@ export class UsersService {
                         .catch(handleError);
     };
 
-    /**
-     * Add a new user to LDAP
-     */
+    /** Add a new user to LDAP */
     createUser( user: User ) {
         return this.authHttp.post( LdapURL + 'api/v1/admin/users/', user )
                             .catch(handleError);
     };
 
-    /**
-     * Submit an LDAP update to an existing user
-     */
+    /** Submit an LDAP update to an existing user */
     updateUser( user: User, update: LdapChange ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/' + user.uid, update )
                             .catch(handleError);
     };
 
-    /**
-     * Remove a user from LDAP
-     */
+    /** Remove a user from LDAP */
     deleteUser( username: string ) {
         return this.authHttp.delete( LdapURL + 'api/v1/admin/users/' + username )
                             .catch(handleError);
     };
 
-    /**
-     * Lock a user account
-     */
+    /** Lock a user account */
     lockUser( username: string ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/lock' + username, {})
                             .catch(handleError);
     };
 
-    /**
-     * Unlock a user account
-     */
+    /** Unlock a user account */
     unlockUser( username: string ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/unlock' + username, {})
                             .catch(handleError);
     };
 
-    /**
-     * Reset a user account
-     */
+    /** Reset a user account */
     resetUser( username: string ) {
         return this.authHttp.put( LdapURL + 'api/v1/admin/users/reset' + username, {})
+                            .catch(handleError);
+    };
+
+    /** Send an email to a user to activate their account */
+    sendActivationEmail( user: User ) {
+        return this.authHttp.put( LdapURL + 'api/v1/admin/sendActivationEmail', user )
                             .catch(handleError);
     };
 }

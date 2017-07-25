@@ -8,20 +8,17 @@
         <div class="user-details">
             <h3>Details</h3>
             <md-divider></md-divider>
-            <p>
-                <md-input-container>
-                    <label>Username</label>
-                    <input mdInput [(ngModel)]="selectedUser.uid">
-                </md-input-container>
-            </p>
+            <md-input-container class="full-width">
+                <input mdInput [(ngModel)]="selectedUser.uid" disabled>
+            </md-input-container>
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
-                <md-input-container>
+                <md-input-container class="full-width">
                     <input mdInput formControlName="givenName" placeholder="First Name">
                 </md-input-container>
-                <md-input-container>
+                <md-input-container class="full-width">
                     <input mdInput formControlName="sn" placeholder="Last Name">
                 </md-input-container>
-                <md-input-container>
+                <md-input-container class="full-width">
                     <input mdInput formControlName="mail" type="email" placeholder="Email">
                 </md-input-container>
                 <button md-raised-button [disabled]="!form.valid || !userChanged" color="accent" class="save-button">
@@ -33,11 +30,11 @@
                 <md-list-item class="secondary-button-padding" *ngFor="let group of selectedUser.groups">
                     <md-icon color="accent">group</md-icon>
                     <p>{{group}}</p>
-                    <button md-icon-button *ngIf="isAdmin || ( userRegex && checkGroup(group) )" (click)="removeUserFromGroup(selectedUser, group)">
+                    <button md-icon-button *ngIf="auth.isAdmin || ( auth.userRegex && checkGroup(group) )" (click)="removeUserFromGroup(selectedUser, group)">
                         <md-icon color="warn" mdTooltip="Remove from user">close</md-icon>
                     </button>
                 </md-list-item>
-                <md-list-item *ngIf="isAdmin || userRegex">
+                <md-list-item *ngIf="auth.loggedIn || auth.userRegex">
                     <app-autocomplete [list]="groups"></app-autocomplete>
                 </md-list-item>
             </md-list>
@@ -45,21 +42,21 @@
         <div>
             <h3>Administration</h3>
             <md-divider></md-divider>
-            <button md-icon-button *ngIf="selectedUser.nsAccountLock === 'false'" (click)="lockUserAccount(selectedUser)" [disabled]="!isAdmin">
+            <button md-button *ngIf="selectedUser.nsAccountLock === 'false'" (click)="lockUserAccount(selectedUser)" [disabled]="!auth.isAdmin">
                 <md-icon color="accent">lock_open</md-icon>
                 <span *ngIf="isAdmin">Lock Account</span>
                 <span *ngIf="!isAdmin">Account Unlocked</span>
             </button>
-            <button md-icon-button *ngIf="selectedUser.nsAccountLock === 'true'" (click)="unlockUserAccount(selectedUser)" [disabled]="!isAdmin">
+            <button md-button *ngIf="selectedUser.nsAccountLock === 'true'" (click)="unlockUserAccount(selectedUser)" [disabled]="!auth.isAdmin">
                 <md-icon color="accent">lock</md-icon>
                 <span *ngIf="isAdmin">Unlock Account</span>
                 <span *ngIf="!isAdmin">Account Locked</span>
             </button>
-            <button md-icon-button (click)="resetUserAccount(selectedUser)" *ngIf="isAdmin">
+            <button md-button (click)="resetUserAccount(selectedUser)" *ngIf="auth.isAdmin">
                 <md-icon color="accent">refresh</md-icon>
                 Reset User Account
             </button>
-            <button md-icon-button (click)="$ctrl.sendActivationEmail()" *ngIf="isAdmin">
+            <button md-button (click)="sendActivationEmail()" *ngIf="auth.isAdmin">
                 <md-icon color="accent">email</md-icon>
                 Send Activation Email
             </button>
@@ -70,10 +67,10 @@
             <p>Last Password Update: {{selectedUser.pwmLastPwdUpdate}}</p>
             <p>Pwm New Request: {{selectedUser.pwmNewRequest}}</p>
             <h4>PWM Event Log</h4>
-<pre><code ngBind="selectedUser.pwmEventLog"></code></pre>
+<pre><code>{{selectedUser.pwmEventLog}}</code></pre>
             <h4>Object Classes</h4>
             <ul>
-                <li ng-repeat="group in selectedUser.objectClass">{{group}}</li>
+                <li *ngFor="let group of selectedUser.objectClass">{{group}}</li>
             </ul>
         </div>
     </md-card>

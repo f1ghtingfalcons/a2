@@ -1,8 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { UsersService, GroupsService,  } from '../http-services/index';
+import { Component, OnInit } from '@angular/core';
+import { UsersService, GroupsService, AuthService } from '../http-services/index';
 import { ActivatedRoute } from '@angular/router';
 import { User, Group, ldapSort, LdapChange, ActivityLogService } from '../shared/index';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import * as beautifier from 'vkbeautify';
 
 @Component({
   selector: 'app-profile',
@@ -25,14 +26,8 @@ export class ProfileComponent implements OnInit {
                  private activityLog: ActivityLogService,
                  private groupsService: GroupsService,
                  private route: ActivatedRoute,
-                 @Inject(FormBuilder) fb: FormBuilder ) {
-        this.form = fb.group({
-            givenName: ['', Validators.required],
-            sn: ['', Validators.required],
-            mail: ['', Validators.required],
-            uid: ['', Validators.required]
-        })
-    }
+                 private auth: AuthService,
+                 private fb: FormBuilder ) {}
 
     ngOnInit() {
         this.route.params.subscribe( params => {
@@ -40,12 +35,22 @@ export class ProfileComponent implements OnInit {
             this.getUser();
             this.loadGroupList();
         });
+        this.form = this.fb.group({
+            givenName: ['', Validators.required],
+            sn: ['', Validators.required],
+            mail: ['', Validators.required]
+        });
+        // When the first or last name is updated, update the full name as well
+        this.form.get('givenName').valueChanges.subscribe( givenName => {
+            this.selectedUser.cn = givenName + ' ' + this.form.get('sn').value;
+        });
+        this.form.get('sn').valueChanges.subscribe( sn => {
+            this.selectedUser.cn = this.form.get('givenName').value + ' ' + sn;
+        });
     }
 
-    /**
-     * Checks an ldap object against a regex, object must have cn property
-     */
-    checkRegex( obj ) {
+    /** Checks an ldap object against a regex, object must have cn property */
+    checkRegex( obj: Group | User ) {
         if ( this.userRegex ) {
             return this.userRegex.some( function( regex ) {
                 return obj.cn.search( regex ) !== -1 ;
@@ -53,9 +58,7 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    /**
-     * Checks an ldap object against a regex, object must have cn property
-     */
+    /** Checks an ldap object against a regex, object must have cn property */
     checkGroup( group ) {
         if ( this.userRegex ) {
             return this.userRegex.some( function( regex ) {
@@ -64,9 +67,7 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    /**
-     * Load a list of all the LDAP groups
-     */
+    /** Load a list of all the LDAP groups */
     loadGroupList() {
         this.groupsService.getAllGroups().subscribe(
             groups => this.groups = groups,
@@ -74,27 +75,23 @@ export class ProfileComponent implements OnInit {
         );
     }
 
-    /**
-     * Load a user by user id. User id is provided in the route params
-     */
+    /** Load a user by user id. User id is provided in the route params */
     getUser() {
         this.usersService.getById( this.selectedUserID ).subscribe(
             user => {
                 this.selectedUser = user;
                 if ( user.pwmEventLog ) {
-                     user.pwmEventLog = user.pwmEventLog.replace('0001#.#.#', '');
-                     // this.selectedUser.pwmEventLog = user.pwmEventLog;
+                    user.pwmEventLog = user.pwmEventLog.replace('0001#.#.#', '');
+                    this.selectedUser.pwmEventLog = beautifier.xml( user.pwmEventLog );
                 }
-                    this.form.setValue({ givenName: user.givenName, sn: user.sn, mail: user.mail, uid: user.uid });
+                this.form.setValue({ givenName: user.givenName, sn: user.sn, mail: user.mail });
             },
             error => this.activityLog.error('Failed to get user profile: ' + error )
         );
     }
 
-    /**
-     * Adds this user to LDAP group membership
-     */
-    addUserToGroup( user, group ) {
+    /** Adds this user to LDAP group membership */
+    addUserToGroup( user: User, group: Group ) {
         if ( !group ) { return; }
 
         // make sure user isn't already in the group
@@ -119,25 +116,17 @@ export class ProfileComponent implements OnInit {
         }*/
     }
 
-    /**
-     * Removes this user from LDAP group membership
-     */
-    removeUserFromGroup( user, group ) {
-        const r = confirm('Remove ' + user.cn + ' from ' + group + '?');
-        if ( r ) {
-            const change = new LdapChange('delete', { uniqueMember: user.dn });
-            this.groupsService.updateGroup( group.cn, change).subscribe(
-                () => this.activityLog.log('User sucessfully removed from group: ' + group.cn),
-                error => this.activityLog.error('Failed to remove user from group: ' + error),
-                () => this.getUser()
-            );
-        }
+    /** Removes this user from LDAP group membership */
+    removeUserFromGroup( user: User, group: Group ) {
+        this.groupsService.updateGroup( group.cn, new LdapChange('delete', { uniqueMember: user.dn })).subscribe(
+            () => this.activityLog.log('User sucessfully removed from group: ' + group.cn),
+            error => this.activityLog.error('Failed to remove user from group: ' + error),
+            () => this.getUser()
+        );
     }
 
-    /**
-     * Sets nsAccountLock to true for user
-     */
-    lockUserAccount( user ) {
+    /** Sets nsAccountLock to true for user */
+    lockUserAccount( user: User ) {
         this.usersService.lockUser( user.uid ).subscribe(
             () => this.activityLog.log('User sucessfully locked'),
             error => this.activityLog.error('Failed to lock user account: ' + error),
@@ -145,10 +134,8 @@ export class ProfileComponent implements OnInit {
         );
     }
 
-    /**
-     * Sets nsAccountLock to false for user
-     */
-    unlockUserAccount( user ) {
+    /** Sets nsAccountLock to false for user */
+    unlockUserAccount( user: User ) {
         this.usersService.unlockUser( user.uid ).subscribe(
             () => this.activityLog.log('User sucessfully unlocked'),
             error => this.activityLog.error('Failed to unlock user account: ' + error),
@@ -156,10 +143,8 @@ export class ProfileComponent implements OnInit {
         );
     }
 
-    /**
-     * Locks account and deletes user set parameters
-     */
-    resetUserAccount( user ) {
+    /** Locks account and deletes user set parameters */
+    resetUserAccount( user: User ) {
         if ( confirm(`Resetting a user account will delete their security questions,
             lock their account and reset their password. This user will receive an email to reset this information.
             Are you sure you wish to reset ` + user.cn + `'s account?`)) {
@@ -169,17 +154,6 @@ export class ProfileComponent implements OnInit {
                     () => this.getUser()
                 );
         }
-    }
-
-    /**
-     * Sets user CN to a new value
-     */
-    updateCN() {
-        /*
-        if ( vm.selectedUser.givenName && vm.selectedUser.sn ) {
-            vm.selectedUser.cn = vm.selectedUser.givenName + " " + vm.selectedUser.sn;
-        }
-        checkChanges();*/
     }
 
     /**
@@ -215,83 +189,25 @@ export class ProfileComponent implements OnInit {
     }
 
     /**
-     * Checks to see if any changes have happened to a users parameters.
-     * Currently checks:
-     * - email
-     * - first name
-     * - last name
-     */
-    checkChanges() {
-        /*
-        if ( vm.selectedUser.mail !== email || vm.selectedUser.givenName !== fName || vm.selectedUser.sn !== lName ) {
-            vm.userChanged = true;
-        } else {
-            vm.userChanged = false;
-        }*/
-    }
-
-    /**
-     * Checks to see if parameters have been changed and if they have
-     * runs updateProperty on each change.
-     */
-    saveUserDetails() {
-        /*
-        vm.userChanged = false;
-        // only one property can be updated at a time
-        if ( vm.selectedUser.mail !== email ) {
-            updateProperty({ mail: vm.selectedUser.mail }, 'Email');
-        }
-        if ( vm.selectedUser.givenName !== fName ) {
-            updateProperty({ givenName: vm.selectedUser.givenName }, 'First Name');
-        }
-        if ( vm.selectedUser.sn !== lName ) {
-            updateProperty({ sn: vm.selectedUser.sn }, 'Last Name');
-        }
-        if ( vm.selectedUser.givenName !== fName || vm.selectedUser.sn !== lName ) {
-            updateProperty({ cn: vm.selectedUser.cn }, 'Full Name');
-        }*/
-    }
-
-    /**
      * Submits a 'replace' request for each changed parameter.
      *
      * Warning: This will replace the entire contents of a property
      * so be careful if you want to use this to replace an array property.
      */
-    updateProperty( property, propertyName ) {
-        /*
-        var change = {
-            operation: 'replace',
-            modification: property
-        };
-        UserService.updateUser( vm.selectedUser, change ).then(
-            function( response ) {
-                // for some reason, error often redirect here instead of the error function,
-                // we form our reponse to help catch this mistake.
-                if ( response.success ) {
-                    FeedbackService.showToast( 'User ' + propertyName + ' updated successfully' );
-                    getUser();
-                } else {
-                    FeedbackService.showErrorToast( 'Error updating user ' + propertyName + ':  ' + response.error );
-                }
-            }, function( error ) {
-                FeedbackService.showErrorToast( 'Error updating user + ' + propertyName + ':  ' + error );
-            }
-        );*/
+    updateProperty( property: string, propertyName: string ) {
+        this.usersService.updateUser( this.selectedUser, new LdapChange('replace', property )).subscribe(
+            () => {
+                this.activityLog.log('User ' + propertyName + ' updated successfully');
+                this.getUser();
+            },
+            error => this.activityLog.error('Failed to update user')
+        );
     }
 
     sendActivationEmail() {
-        /*
-        UserService.sendActivationEmail( vm.selectedUser ).then(
-            function( response ) {
-                if ( response.success ) {
-                    FeedbackService.showToast( 'User Activation Email sent successfully' );
-                } else {
-                    FeedbackService.showErrorToast( 'Error sending user activation email: ' + response.error );
-                }
-            }, function( error ) {
-                FeedbackService.showErrorToast( 'Error sending user activation email: ' + error );
-            }
-        );*/
+        this.usersService.sendActivationEmail( this.selectedUser ).subscribe(
+            () => this.activityLog.log('Activation Email Sent Successfully'),
+            error => this.activityLog.error('Failed to send activation email: ' + error )
+        );
     }
 }

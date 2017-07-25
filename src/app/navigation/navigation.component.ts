@@ -1,9 +1,18 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Page, PagePermissions } from './page';
 import { MdDialog, MdDialogRef } from '@angular/material';
 import { AuthService } from '../http-services/auth.service';
 import { NgForm } from '@angular/forms';
+
+/** Object to hold page permission information */
+class PagePermissions {
+    constructor(public needsLogin: boolean, public needsAdmin: boolean) {}
+}
+
+/** Object to hold page route information */
+class Page {
+    constructor(public label: string, public url: string, public permissions: PagePermissions) {}
+}
 
 const freeAccess: PagePermissions = new PagePermissions( false, false );
 const adminOnly: PagePermissions = new PagePermissions( true, true );
@@ -17,7 +26,6 @@ const loggedInAccess: PagePermissions = new PagePermissions( true, false );
 
 /** Dynamic Navigation Bar Component */
 export class NavigationComponent {
-    menuOpen = false;
     pages: Page[] = [
         new Page( 'Users', 'users', freeAccess ),
         new Page( 'Groups', 'groups', loggedInAccess ),
@@ -29,9 +37,7 @@ export class NavigationComponent {
 
     constructor( private router: Router, public loginDialog: MdDialog, private auth: AuthService ) {}
 
-    /**
-     * Returns whether or not a link points to the current page
-     */
+    /** Returns whether or not a link points to the current page */
     isActive( page: Page ): boolean {
         if ( '/' + page.url === this.router.url ) {
             return true;
@@ -40,33 +46,24 @@ export class NavigationComponent {
         }
     }
 
-    /**
-     * Display the login dialog box
-     */
+    /** Display the login dialog box */
     showLogin() {
         this.loginDialog.open(LoginDialogComponent);
     }
 
-    /**
-     * Delete the token and reset logged in variables
-     */
+    /** Delete the token and reset logged in variables */
     logout() {
         this.auth.logout();
     }
 
-    /**
-     * toggles the extra site pages menu (next to the user name)
-     */
-    openMenu() {
-        this.menuOpen = !this.menuOpen;
-    }
-
+    /** Load a user's profile page */
     gotoProfilePage() {
         if ( this.auth.loggedInUser ) {
             this.router.navigateByUrl('profile/' + this.auth.loggedInUser);
         }
     }
 
+    /** Goto the admin panel */
     gotoAdminPage() {
         this.router.navigate(['/admin']);
     }
@@ -80,7 +77,7 @@ export class LoginDialogComponent {
     loggingIn = false;
     loginError: string;
 
-    constructor(public dialogRef: MdDialogRef<LoginDialogComponent>, private auth: AuthService ) {}
+    constructor( public dialogRef: MdDialogRef<LoginDialogComponent>, private auth: AuthService ) {}
 
     login( f: NgForm ) {
         this.loggingIn = true;

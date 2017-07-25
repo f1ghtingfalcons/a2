@@ -50,6 +50,7 @@
         "nodemailer-stub-transport": "^1.1.0",
         "rxjs": "^5.1.0",
         "splunk-logging": "^0.9.3",
+        "vkbeautify": "^0.99.2",
         "web-animations-js": "^2.3.1",
         "zone.js": "^0.8.14"
     },

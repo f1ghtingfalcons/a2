@@ -37,3 +37,10 @@ export class Group {
 export class LdapChange {
     constructor( public operation: string, public modification: {} ) {}
 }
+
+/** LDAP Project */
+export class Project {
+    leads: { cn: string, uid: string }[];
+    id: number;
+    constructor( public name: string, public group: string, public regex: string) {}
+}
