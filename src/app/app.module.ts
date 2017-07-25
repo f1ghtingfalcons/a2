@@ -16,7 +16,7 @@ import { UsersComponent } from './users/users.component';
 import { CreateComponent } from './create/create.component'
 import { AboutComponent } from './about/about.component';
 import { GroupsComponent } from './groups/groups.component';
-import { ToolsComponent } from './tools/tools.component';
+import { ToolsComponent, ToolListDialogComponent } from './tools/tools.component';
 import { ProfileComponent } from './profile/profile.component';
 import { NavigationComponent, LoginDialogComponent } from './navigation/navigation.component';
 import * as adminPage from './admin/index';
@@ -38,6 +38,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
         AboutComponent,
         GroupsComponent,
         ToolsComponent,
+        ToolListDialogComponent,
         ProfileComponent,
         adminPage.AdminComponent,
         adminPage.AdminsControlComponent,

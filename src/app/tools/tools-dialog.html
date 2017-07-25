@@ -1,53 +1,51 @@
-<md-dialog class="list-tool-dialog">
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>Results</h2>
-        <span flex></span>
-        <md-button class="md-icon-button" ng-click="cancel()">
-            <md-icon aria-label="Close dialog">close</md-icon>
-        </md-button>
-      </div>
-    </md-toolbar>
-    <div class="md-padding" layout="row">
-        <div class="md-margin panel matched" flex>
-            <div class="panel-heading">Users Matched in Group</div>
-            <div class="panel-body">
-                <md-list>
-                    <md-list-item class="md-3-line" ng-repeat="user in usersInGroup track by $index">
-                        <md-icon>person</md-icon>
-                        <div class="md-list-item-text" layout="column">
-                            <h3>{{ user.cn }}</h3>
-                            <h4>Username: {{ user.uid }}</h4>
-                            <p>{{ user.mail }}</p>
-                        </div>
-                    </md-list-item>
-                </md-list>
-            </div>
-        </div>
-        <div class="md-margin panel unmatched" flex>
-            <div class="panel-heading">Users Not Matched in Group</div>
-            <div class="panel-body">
-                <md-list>
-                    <md-list-item class="md-3-line" ng-repeat="user in usersNotInGroup track by $index">
-                        <md-icon>person</md-icon>
-                        <div class="md-list-item-text" layout="column">
-                            <h3>{{ user.cn }}</h3>
-                            <h4>Username: {{ user.uid }}</h4>
-                            <p>{{ user.mail }}</p>
-                        </div>
-                    </md-list-item>
-                </md-list>
-            </div>
-        </div>
+<md-toolbar>
+    <div class="md-toolbar-tools">
+    <h2>Results</h2>
+    <span flex></span>
+    <button md-icon-button (click)="cancel()">
+        <md-icon>close</md-icon>
+    </button>
     </div>
-    <div class="md-margin panel notfound">
-        <div class="panel-heading">Emails not matched to Users</div>
+</md-toolbar>
+<div fxLayout="row">
+    <div class="panel matched" fxFlex>
+        <div class="panel-heading">Users Matched in Group</div>
         <div class="panel-body">
-            <md-list-item ng-repeat="email in nonExistentUsers track by $index">
-                <div class="md-list-item-text" layout="column">
-                    <p>{{ email }}</p>
-                </div>
-            </md-list-item>
+            <md-list>
+                <md-list-item class="md-3-line" *ngFor="let user of usersInGroup">
+                    <md-icon>person</md-icon>
+                    <div class="md-list-item-text">
+                        <h3>{{ user.cn }}</h3>
+                        <h4>Username: {{ user.uid }}</h4>
+                        <p>{{ user.mail }}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
         </div>
     </div>
-</md-dialog>
+    <div class="panel unmatched" fxFlex>
+        <div class="panel-heading">Users Not Matched in Group</div>
+        <div class="panel-body">
+            <md-list>
+                <md-list-item class="md-3-line" *ngFor="let user of usersNotInGroup">
+                    <md-icon>person</md-icon>
+                    <div class="md-list-item-text">
+                        <h3>{{ user.cn }}</h3>
+                        <h4>Username: {{ user.uid }}</h4>
+                        <p>{{ user.mail }}</p>
+                    </div>
+                </md-list-item>
+            </md-list>
+        </div>
+    </div>
+</div>
+<div class="panel notfound">
+    <div class="panel-heading">Emails not matched to Users</div>
+    <div class="panel-body">
+        <md-list-item *ngFor="let email of nonExistentUsers">
+            <div class="md-list-item-text">
+                <p>{{ email }}</p>
+            </div>
+        </md-list-item>
+    </div>
+</div>
